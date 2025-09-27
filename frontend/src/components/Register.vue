@@ -29,7 +29,7 @@
         </button>
         <p class="text-xs text-center mt-2 text-gray-800">
           Already have an account?
-          <span class="font-bold cursor-pointer">Log in</span>
+          <RouterLink to="/login" class="font-bold cursor-pointer">Log in</RouterLink>
         </p>
       </div>
     </form>

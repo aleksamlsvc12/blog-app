@@ -19,7 +19,7 @@
         </button>
         <p class="text-xs text-center mt-2 text-gray-800">
           Don't have an account?
-          <span class="font-bold cursor-pointer">Register</span>
+          <RouterLink to="/register" class="font-bold cursor-pointer">Register</RouterLink>
         </p>
       </div>
     </form>
