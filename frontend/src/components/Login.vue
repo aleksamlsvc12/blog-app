@@ -1,6 +1,6 @@
 <template>
   <div class="h-full flex justify-center items-center font-mono">
-    <form class="flex flex-col justify-between w-1/4 h-[70%] p-10 bg-white">
+    <form class="flex flex-col justify-between w-[80%] lg:w-1/4 h-[70%] p-10 bg-white">
       <p class="text-lg font-bold text-center">Login</p>
 
       <div>
