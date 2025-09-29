@@ -1,20 +1,24 @@
 <?php
-$db_server = '127.0.0.1';
-$db_user = 'root';
-$db_pass = '';
-$db_name = 'blog_db';
-$conn = '';
+$host = '127.0.0.1';
+$user = 'root';
+$pass = '';
+$db = 'blog_db';
 
 $conn = mysqli_connect(
-  $db_server,
-  $db_user,
-  $db_pass,
-  $db_name
+  $host,
+  $user,
+  $pass,
+  $db,
+  3306
 );
 
-if(!$conn){
-  die('Could not connect to the database.<br>'. mysqli_connect_error());
-}else{
-  echo'Connected to the database.<br>';
+if (!$conn) {
+  http_response_code(500);
+  header('Content-Type: application/json');
+  echo json_encode([
+    'ok' => false,
+    'message' => 'DB connect failed',
+    'error' => mysqli_connect_error()
+  ]);
+  exit;
 }
-?>
