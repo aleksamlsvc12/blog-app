@@ -1,11 +1,73 @@
 <script setup>
-  import { ref } from 'vue';
-  const passwordInput = ref(null);
+import { ref } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router";
+
+const passwordInput = ref(null);
+
+const name = ref("");
+const surname = ref("");
+const email = ref("");
+const password = ref("");
+const message = ref("");
+const success = ref(false);
+
+const router = useRouter();
+
+const registerUser = async () => {
+  try {
+    const res = await axios.post(
+      "http://localhost:8000/api/register.php",
+      {
+        name: name.value,
+        surname: surname.value,
+        email: email.value,
+        password: password.value,
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    console.log("✅", res.status, res.data);
+
+    if (res.data && res.data.ok === true) {
+      success.value = true;
+    } else {
+      success.value = false;
+    }
+
+    if (res.data && res.data.message) {
+      message.value = res.data.message;
+    } else {
+      message.value = JSON.stringify(res.data);
+    }
+
+    alert(message.value);
+
+    if (success.value) router.push("/login");
+  } catch (err) {
+    if (err.response) {
+      console.log("❌", err.response.status, err.response.data);
+    } else {
+      console.log("❌ No response");
+    }
+
+    if (err.response && err.response.data && err.response.data.errors) {
+      const errorsObj = err.response.data.errors;
+      message.value = Object.values(errorsObj).join(" ");
+    } else if (err.response && err.response.data && err.response.data.message) {
+      message.value = err.response.data.message;
+    } else {
+      message.value = "Server error";
+    }
+
+    success.value = false;
+  }
+};
 
 function passVisible() {
   if (passwordInput.value.type == "text") {
     passwordInput.value.type = "password";
-  }else{
+  } else {
     passwordInput.value.type = "text";
   }
 }
@@ -14,29 +76,35 @@ function passVisible() {
 <template>
   <div class="h-full flex justify-center items-center font-mono">
     <form
+      @submit.prevent="registerUser"
       class="flex flex-col justify-between w-[80%] lg:w-1/4 h-[85%] p-10 bg-white"
     >
       <p class="text-lg font-bold text-center">Register</p>
 
       <div>
         <label for="Name"> <span class="color-red">*</span>Name </label>
-        <input type="text" class="auth-inputs" />
+        <input v-model="name" type="text" class="auth-inputs" />
       </div>
 
       <div>
         <label for="Surname"> <span class="color-red">*</span>Surname </label>
-        <input type="text" class="auth-inputs" />
+        <input v-model="surname" type="text" class="auth-inputs" />
       </div>
 
       <div>
         <label for="Email"> <span class="color-red">*</span>Email </label>
-        <input type="email" class="auth-inputs" />
+        <input v-model="email" type="email" class="auth-inputs" />
       </div>
 
       <div>
         <label for="Password"> <span class="color-red">*</span>Password </label>
         <div class="relative">
-          <input ref="passwordInput" type="password" class="auth-inputs" />
+          <input
+            v-model="password"
+            ref="passwordInput"
+            type="password"
+            class="auth-inputs"
+          />
           <button
             @click.prevent="passVisible()"
             id="passwordButton"
@@ -48,7 +116,10 @@ function passVisible() {
       </div>
 
       <div>
-        <button class="bg-black text-white p-3 cursor-pointer w-full">
+        <button
+          type="submit"
+          class="bg-black text-white p-3 cursor-pointer w-full"
+        >
           Register
         </button>
         <p class="text-xs text-center mt-2 text-gray-800">
@@ -56,6 +127,10 @@ function passVisible() {
           <RouterLink to="/login" class="font-bold cursor-pointer"
             >Log in</RouterLink
           >
+        </p>
+
+        <p v-if="message" class="text-center text-xs text-red-500 mt-4">
+          {{ message }}
         </p>
       </div>
     </form>
