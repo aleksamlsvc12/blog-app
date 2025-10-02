@@ -23,7 +23,7 @@ const auth = useAuthStore();
           v-if="auth.isLoggedIn"
           class="border-1 p-1 pl-3 pr-3 cursor-pointer"
         >
-          Username
+          Profile
         </button>
       </RouterLink>
 

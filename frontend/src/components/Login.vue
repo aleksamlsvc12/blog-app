@@ -30,7 +30,7 @@ const loginUser = async () => {
 
     if (res.data && res.data.ok === true) {
       success.value = true;
-      auth.login()
+      auth.login();
     } else {
       success.value = false;
     }
