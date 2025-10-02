@@ -1,5 +1,8 @@
 <script setup>
 import { useAuthStore } from "../stores/auth";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 const auth = useAuthStore();
 </script>
 
@@ -27,11 +30,17 @@ const auth = useAuthStore();
     </div>
 
     <div class="flex gap-2 lg:flex-row flex-col">
-      <RouterLink to="/profile" v-if="auth.isLoggedIn">
+      <RouterLink to="/profile" v-if="auth.isLoggedIn && route.path === '/categories'">
         <button class="border p-1 px-3 cursor-pointer">Profile</button>
       </RouterLink>
 
-      <RouterLink to="/login" v-else>
+      <RouterLink to="/" v-if="auth.isLoggedIn && route.path === '/profile'">
+        <button @click="auth.logout()" class="border p-1 px-3 cursor-pointer">
+          Logout
+        </button>
+      </RouterLink>
+
+      <RouterLink to="/login" v-if="!auth.isLoggedIn">
         <button class="border p-1 px-3 cursor-pointer">Login</button>
       </RouterLink>
 
