@@ -2,6 +2,9 @@
 import { ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
+import { useAuthStore } from '../stores/auth';
+
+const auth = useAuthStore();
 
 const passwordInput = ref(null);
 
@@ -27,6 +30,7 @@ const loginUser = async () => {
 
     if (res.data && res.data.ok === true) {
       success.value = true;
+      auth.login()
     } else {
       success.value = false;
     }
