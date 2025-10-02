@@ -5,34 +5,38 @@ const auth = useAuthStore();
 
 <template>
   <div
-    class="h-[10%] flex justify-between items-center pl-[10%] pr-[10%] font-mono"
+    class="lg:h-[10%] p-4 gap-4 h-auto flex flex-col lg:flex-row justify-around items-center font-mono"
   >
-    <RouterLink v-if="!auth.isLoggedIn" to="/" class="text-2xl cursor-pointer">Typo</RouterLink>
-    <span v-if="auth.isLoggedIn" class="text-2xl cursor-pointer">Typo</span>
-
-    <div v-if="auth.isLoggedIn" class="text-sm">
-      <RouterLink to="/categories">
-        <span class="mr-10 cursor-pointer">Categories</span>
-      </RouterLink>
-      <span class="cursor-pointer">Create Post</span>
+    <div class="text-2xl cursor-pointer">
+      <RouterLink v-if="!auth.isLoggedIn" to="/">Typo</RouterLink>
+      <span v-else>Typo</span>
     </div>
 
-    <div class="flex gap-2">
-      <RouterLink to="/profile">
-        <button
-          v-if="auth.isLoggedIn"
-          class="border-1 p-1 pl-3 pr-3 cursor-pointer"
-        >
-          Profile
-        </button>
+    <div
+      class="text-sm flex items-center flex-col lg:flex-row justify-center lg:gap-10 gap-2 min-w-[200px]"
+    >
+      <template v-if="auth.isLoggedIn">
+        <RouterLink to="/categories">
+          <span class="cursor-pointer">Categories</span>
+        </RouterLink>
+        <span class="cursor-pointer">Create Post</span>
+      </template>
+      <template v-else>
+        <span class="opacity-0 select-none lg:block hidden">placeholder</span>
+      </template>
+    </div>
+
+    <div class="flex gap-2 lg:flex-row flex-col">
+      <RouterLink to="/profile" v-if="auth.isLoggedIn">
+        <button class="border p-1 px-3 cursor-pointer">Profile</button>
       </RouterLink>
 
-      <RouterLink v-if="!auth.isLoggedIn" to="/login">
-        <button class="border-1 p-1 pl-3 pr-3 cursor-pointer">Login</button>
+      <RouterLink to="/login" v-else>
+        <button class="border p-1 px-3 cursor-pointer">Login</button>
       </RouterLink>
 
       <button
-        class="border-1 p-1 pl-2 pr-2 cursor-pointer flex justify-center items-center"
+        class="border p-2 px-2 cursor-pointer flex justify-center items-center"
       >
         <i class="pi pi-moon"></i>
       </button>
