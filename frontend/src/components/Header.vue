@@ -35,7 +35,7 @@ const auth = useAuthStore();
     <div class="flex gap-2 lg:flex-row flex-col">
       <RouterLink
         to="/profile"
-        v-if="auth.isLoggedIn && (route.path === '/categories' || route.path === '/post')"
+        v-if="auth.isLoggedIn && (route.path !== '/login' || route.path !== '/register' || route.path !== '/'   )"
       >
         <button class="border p-1 px-3 cursor-pointer">Profile</button>
       </RouterLink>
