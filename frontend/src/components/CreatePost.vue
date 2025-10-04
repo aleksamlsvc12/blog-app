@@ -20,8 +20,10 @@
           <label for="Thumbnail" class="text-sm">Thumbnail</label>
           <input
             type="file"
+            accept=".png, .jpg, .jpeg"
             class="file:py-1 file:px-3 file:border-1 file:cursor-pointer block text-xs border p-2 file:mr-2 w-full"
           />
+          <p class="text-[9px] text-red-500 mt-1 ">&ast;Allowed file formats: .png, .jpg, .jpeg</p>
         </div>
       </div>
     </form>
