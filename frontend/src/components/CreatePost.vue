@@ -20,7 +20,7 @@
           <label for="Thumbnail" class="text-sm">Thumbnail</label>
           <input
             type="file"
-            class="file:py-1 file:px-3 file:border-1 file:cursor-pointer block text-xs border p-2 text-center w-full"
+            class="file:py-1 file:px-3 file:border-1 file:cursor-pointer block text-xs border p-2 file:mr-2 w-full"
           />
         </div>
       </div>
