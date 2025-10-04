@@ -58,7 +58,7 @@ onMounted(async () => {
 
     <div v-else>
       <h1 class="text-2xl font-bold mb-4">
-        {{ route.params.name }}:
+        {{ route.params.name.toUpperCase() }}:
       </h1>
 
       <div
