@@ -1,19 +1,20 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import axios from "axios";
 
 const route = useRoute();
-const router = useRouter();
 
 const posts = ref([]);
 const loading = ref(true);
+const hasNoContent = ref(false);
 
 onMounted(async () => {
   const categoryName = route.params.name?.trim();
 
   if (!categoryName) {
-    router.push("/no-content");
+    hasNoContent.value = true;
+    loading.value = false;
     return;
   }
 
@@ -26,11 +27,12 @@ onMounted(async () => {
 
     if (data.status === "success") {
       posts.value = data.posts;
+      hasNoContent.value = posts.value.length === 0;
     } else {
-      router.push("/no-content");
+      hasNoContent.value = true;
     }
   } catch (err) {
-    router.push("/no-content");
+    hasNoContent.value = true;
   } finally {
     loading.value = false;
   }
@@ -38,8 +40,21 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="p-10 font-mono">
+  <div class="p-10 font-mono h-full">
     <div v-if="loading" class="text-gray-500">Loading posts...</div>
+
+    <div
+      v-else-if="hasNoContent"
+      class="flex flex-col gap-4 justify-center items-center h-full w-full"
+    >
+      <h1 class="text-2xl font-bold mb-2">
+        Oops! Looks like there are no blogs on this topic.
+      </h1>
+
+      <RouterLink to="/post">
+        <button class="bg-black text-white p-3 cursor-pointer w-full">Create one now!</button>
+      </RouterLink>
+    </div>
 
     <div v-else>
       <h1 class="text-2xl font-bold mb-4">
