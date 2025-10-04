@@ -1,3 +1,22 @@
+<script setup>
+import { ref, onMounted } from "vue";
+import axios from "axios";
+
+const categories = ref([]);
+const selectedCategory = ref("");
+
+onMounted(async () => {
+  try {
+    const res = await axios.get("http://localhost:8000/api/getCategories.php");
+    if (res.data.status === "success") {
+      categories.value = res.data.categories;
+    }
+  } catch (err) {
+    console.error("Error loading categories:", err);
+  }
+});
+</script>
+
 <template>
   <div class="w-full h-full p-8 flex justify-center items-center font-mono">
     <form
@@ -18,7 +37,7 @@
           <textarea
             name="post-description"
             id="post-description"
-            class="border w-full h-[160px] resize-none p-2 text-xs"
+            class="border w-full h-[120px] resize-none p-2 text-xs"
           ></textarea>
         </div>
 
@@ -32,6 +51,25 @@
           <p class="text-[9px] text-red-500 mt-1">
             &ast;Allowed file formats: .png, .jpg, .jpeg
           </p>
+        </div>
+
+        <div class="w-full">
+          <label for="Category" class="text-sm block">Category</label>
+          <select
+            v-model="selectedCategory"
+            name="category"
+            id="category"
+            class="w-full h-[30px] border cursor-pointer text-xs p-2"
+          >
+            <option value="" disabled selected>Select a category</option>
+            <option
+              v-for="category in categories"
+              :key="category.id"
+              :value="category.id"
+            >
+              {{ category.name }}
+            </option>
+          </select>
         </div>
       </div>
       <button class="bg-black text-white p-3 cursor-pointer w-full">
