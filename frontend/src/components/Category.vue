@@ -1,14 +1,23 @@
 <script setup>
-defineProps({
+import { useRouter } from "vue-router";
+
+const props = defineProps({
   category: {
     type: Object,
     required: true,
   },
 });
+
+const router = useRouter();
+
+function goToCategory() {
+  router.push(`/category/${props.category.name}`);
+}
 </script>
 
 <template>
-  <div
+  <div 
+    @click="goToCategory"
     class="border-1 w-[230px] h-[220px] p-5 flex flex-col justify-between cursor-pointer hover:scale-[0.95] transition gap-4 bg-white"
   >
     <div class="bg-black text-white p-2">
