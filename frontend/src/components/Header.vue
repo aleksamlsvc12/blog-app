@@ -22,7 +22,10 @@ const auth = useAuthStore();
         <RouterLink to="/categories">
           <span class="cursor-pointer">Categories</span>
         </RouterLink>
-        <span class="cursor-pointer">Create Post</span>
+
+        <RouterLink to="/post">
+          <span class="cursor-pointer">Create Post</span>
+        </RouterLink>
       </template>
       <template v-else>
         <span class="opacity-0 select-none lg:block hidden">placeholder</span>
@@ -30,7 +33,10 @@ const auth = useAuthStore();
     </div>
 
     <div class="flex gap-2 lg:flex-row flex-col">
-      <RouterLink to="/profile" v-if="auth.isLoggedIn && route.path === '/categories'">
+      <RouterLink
+        to="/profile"
+        v-if="auth.isLoggedIn && (route.path === '/categories' || route.path === '/post')"
+      >
         <button class="border p-1 px-3 cursor-pointer">Profile</button>
       </RouterLink>
 
