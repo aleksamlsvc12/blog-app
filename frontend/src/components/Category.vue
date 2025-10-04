@@ -11,12 +11,12 @@ const props = defineProps({
 const router = useRouter();
 
 function goToCategory() {
-  router.push(`/category/${props.category.name}`);
+  router.push(`/category/${props.category.name.toLowerCase()}`);
 }
 </script>
 
 <template>
-  <div 
+  <div
     @click="goToCategory"
     class="border-1 w-[230px] h-[220px] p-5 flex flex-col justify-between cursor-pointer hover:scale-[0.95] transition gap-4 bg-white"
   >
