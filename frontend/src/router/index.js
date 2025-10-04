@@ -6,7 +6,6 @@ import LoginPageView from "../views/LoginPageView.vue";
 import CategoriesView from "../views/CategoriesView.vue";
 import UserProfileView from "../views/UserProfileView.vue";
 import CreatePostView from "../views/CreatePostView.vue";
-import NoContentView from "../views/NoContentView.vue";
 import SpecificCategoryView from "../views/SpecificCategoryView.vue";
 
 const routes = [
@@ -16,7 +15,6 @@ const routes = [
   { path: "/categories", name: "Categories", component: CategoriesView },
   { path: "/profile", name: "User Profile", component: UserProfileView },
   { path: "/post", name: "Create Post", component: CreatePostView },
-  { path: "/no-content", name: "No content", component: NoContentView },
   { path: "/category/:name", name: "Category", component: SpecificCategoryView, },
 ];
 
