@@ -1,0 +1,78 @@
+<?php
+header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Methods: GET, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
+header("Access-Control-Allow-Credentials: true");
+header("Content-Type: application/json; charset=utf-8");
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+  http_response_code(204);
+  exit;
+}
+
+require_once '../data/db.php';
+
+$categoryName = mysqli_real_escape_string($conn, trim($_GET['category']));
+
+$sql_category = "SELECT id FROM categories WHERE LOWER(name) = LOWER('$categoryName')";
+$result_category = mysqli_query($conn, $sql_category);
+
+if (!$result_category) {
+  echo json_encode([
+    "status" => "error",
+    "message" => "Database error: " . mysqli_error($conn)
+  ]);
+  exit;
+}
+
+if (mysqli_num_rows($result_category) === 0) {
+  echo json_encode([
+    "status" => "empty",
+    "message" => "Category not found."
+  ]);
+  exit;
+}
+
+$category_row = mysqli_fetch_assoc($result_category);
+$category_id = intval($category_row['id']);
+
+$sql_posts = "
+  SELECT id, title, content, image, created_at 
+  FROM posts
+  WHERE fk_category = '$category_id'
+  ORDER BY created_at DESC
+";
+$result_posts = mysqli_query($conn, $sql_posts);
+
+if (!$result_posts) {
+  echo json_encode([
+    "status" => "error",
+    "message" => "Query failed: " . mysqli_error($conn)
+  ]);
+  exit;
+}
+
+if (mysqli_num_rows($result_posts) > 0) {
+  $posts = [];
+
+  while ($row = mysqli_fetch_assoc($result_posts)) {
+    $posts[] = [
+      "id" => $row['id'],
+      "title" => $row['title'],
+      "content" => $row['content'],
+      "image" => $row['image'],
+      "created_at" => $row['created_at']
+    ];
+  }
+
+  echo json_encode([
+    "status" => "success",
+    "posts" => $posts
+  ]);
+} else {
+  echo json_encode([
+    "status" => "empty",
+    "message" => "No posts found for this category."
+  ]);
+}
+?>
