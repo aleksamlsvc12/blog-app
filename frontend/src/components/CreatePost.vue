@@ -1,7 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { useAuthStore } from '../stores/auth';
 import { useRouter } from "vue-router";
 import axios from "axios";
+
+const auth = useAuthStore();
 
 const router = useRouter();
 
@@ -29,7 +32,7 @@ const createPost = async (e) => {
     title: title.value,
     content: content.value,
     fk_category: selectedCategory.value,
-    fk_user: 20,
+    fk_user: auth.user?.id
   };
 
   try {
