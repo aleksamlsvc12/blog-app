@@ -26,11 +26,11 @@ const loginUser = async () => {
       { headers: { "Content-Type": "application/json" } }
     );
 
-    console.log("✅", res.status, res.data);
+    console.log(res.status, res.data);
 
     if (res.data && res.data.ok === true) {
       success.value = true;
-      auth.login();
+      auth.login(res.data.user);
     } else {
       success.value = false;
     }
@@ -44,9 +44,9 @@ const loginUser = async () => {
     if (success.value) router.push("/categories");
   } catch (err) {
     if (err.response) {
-      console.log("❌", err.response.status, err.response.data);
+      console.log(err.response.status, err.response.data);
     } else {
-      console.log("❌ No response");
+      console.log("No response");
     }
 
     if (err.response && err.response.data && err.response.data.errors) {
