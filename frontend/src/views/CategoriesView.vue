@@ -5,8 +5,8 @@ import axios from 'axios';
 const categories = ref([]);
 
 onMounted(async () => {
-  const res = await axios.get('http://localhost:8000/api/categories.php');
-  categories.value = res.data;
+  const res = await axios.get('http://localhost:8000/api/getCategories.php');
+  categories.value = res.data.categories;
 });
 
 import Header from "../components/Header.vue";
