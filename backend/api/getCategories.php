@@ -12,18 +12,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../data/db.php';
 
-$sql = "SELECT id, name FROM categories ORDER BY name ASC";
+$sql = "SELECT id, name, description FROM categories ORDER BY id DESC";
 $result = mysqli_query($conn, $sql);
 
-$categories = [];
+if (!$result) {
+  echo json_encode([
+    "status" => "error",
+    "message" => "Database query failed: " . mysqli_error($conn)
+  ]);
+  exit;
+}
 
-if ($result && mysqli_num_rows($result) > 0) {
+$categories = [];
+if (mysqli_num_rows($result) > 0) {
   while ($row = mysqli_fetch_assoc($result)) {
     $categories[] = $row;
   }
 
   echo json_encode([
     "status" => "success",
+    "count" => count($categories),
     "categories" => $categories
   ]);
 } else {
