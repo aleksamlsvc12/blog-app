@@ -1,9 +1,15 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import axios from "axios";
+
+const router = useRouter();
 
 const categories = ref([]);
 const selectedCategory = ref("");
+const title = ref("");
+const content = ref("");
+const message = ref("");
 
 onMounted(async () => {
   try {
@@ -15,11 +21,58 @@ onMounted(async () => {
     console.error("Error loading categories:", err);
   }
 });
+
+const createPost = async (e) => {
+  e.preventDefault();
+
+  const postData = {
+    title: title.value,
+    content: content.value,
+    fk_category: selectedCategory.value,
+    fk_user: 20,
+  };
+
+  try {
+    const res = await axios.post(
+      "http://localhost:8000/api/createPost.php",
+      postData,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (res.data.status === "success") {
+      alert("Post created successfully!");
+
+      const category = categories.value.find(
+        (c) => Number(c.id) === Number(selectedCategory.value)
+      );
+
+      if (category && category.name) {
+        router.push(`/category/${category.name.toLowerCase()}`);
+      } else {
+        router.push("/categories");
+      }
+
+      title.value = "";
+      content.value = "";
+      selectedCategory.value = "";
+    } else {
+      message.value = res.data.message || "Something went wrong.";
+    }
+  } catch (err) {
+    console.error("Error creating post:", err);
+    message.value = "Server error. Try again later.";
+  }
+};
 </script>
 
 <template>
   <div class="w-full h-full p-8 flex justify-center items-center font-mono">
     <form
+      @submit.prevent="createPost"
       class="bg-white p-8 lg:w-1/4 w-full h-full flex flex-col justify-around items-center"
     >
       <p class="text-lg font-bold">Create post</p>
@@ -29,15 +82,23 @@ onMounted(async () => {
       >
         <div class="w-full">
           <label for="Title" class="text-sm">Title</label>
-          <input type="text" class="auth-inputs" />
+          <input
+            v-model="title"
+            type="text"
+            class="auth-inputs w-full border p-2"
+            placeholder="Enter post title"
+            required
+          />
         </div>
 
         <div class="w-full">
           <label for="Description" class="text-sm block">Description</label>
           <textarea
-            name="post-description"
+            v-model="content"
             id="post-description"
             class="border w-full h-[120px] resize-none p-2 text-xs"
+            placeholder="Write your post..."
+            required
           ></textarea>
         </div>
 
@@ -46,10 +107,11 @@ onMounted(async () => {
           <input
             type="file"
             accept=".png, .jpg, .jpeg"
-            class="file:py-1 file:px-3 file:border-1 file:cursor-pointer block text-xs border p-2 file:mr-2 w-full"
+            disabled
+            class="file:py-1 file:px-3 file:border-1 block text-xs border p-2 file:mr-2 w-full bg-gray-100 cursor-not-allowed"
           />
           <p class="text-[9px] text-red-500 mt-1">
-            &ast;Allowed file formats: .png, .jpg, .jpeg
+            &ast;Allowed file formats: .jpg, .jpeg, .png
           </p>
         </div>
 
@@ -57,11 +119,11 @@ onMounted(async () => {
           <label for="Category" class="text-sm block">Category</label>
           <select
             v-model="selectedCategory"
-            name="category"
             id="category"
             class="w-full h-[30px] border cursor-pointer text-xs p-2"
+            required
           >
-            <option value="" disabled selected>Select a category</option>
+            <option value="" disabled>Select a category</option>
             <option
               v-for="category in categories"
               :key="category.id"
@@ -72,9 +134,15 @@ onMounted(async () => {
           </select>
         </div>
       </div>
-      <button class="bg-black text-white p-3 cursor-pointer w-full">
+
+      <button
+        type="submit"
+        class="bg-black text-white p-3 cursor-pointer w-full mt-4"
+      >
         Post
       </button>
+
+      <p v-if="message" class="mt-4 text-center text-xs">{{ message }}</p>
     </form>
   </div>
 </template>
