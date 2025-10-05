@@ -19,9 +19,12 @@ onMounted(async () => {
   }
 
   try {
-    const res = await axios.get("http://localhost:8000/api/specificCategory.php", {
-      params: { category: categoryName },
-    });
+    const res = await axios.get(
+      "http://localhost:8000/api/specificCategory.php",
+      {
+        params: { category: categoryName },
+      }
+    );
 
     const data = res.data;
 
@@ -52,7 +55,9 @@ onMounted(async () => {
       </h1>
 
       <RouterLink to="/post">
-        <button class="bg-black text-white p-3 cursor-pointer w-full">Create one now!</button>
+        <button class="bg-black text-white p-3 cursor-pointer w-full">
+          Create one now!
+        </button>
       </RouterLink>
     </div>
 
@@ -66,12 +71,73 @@ onMounted(async () => {
         :key="post.id"
         class="border p-8 mb-10 bg-white"
       >
-      <p class="text-sm cursor-pointer mb-2">{{post.name}} {{post.surname}}</p>
-      <div class="flex justify-between items-center lg:flex-row flex-col-reverse gap-2">
-        <span class="text-lg font-bold lg:place-self-center place-self-start">{{ post.title }}</span>
-        <span class="text-xs text-gray-700 lg:place-self-center place-self-start">{{post.created_at}}</span>
-      </div>
-        <p class="text-sm text-gray-700 mt-5 text-justify">{{ post.content }}</p>
+        <div class="border p-4">
+          <div
+            class="flex justify-between items-center lg:flex-row flex-col-reverse gap-2"
+          >
+            <span
+              class="text-lg font-bold lg:place-self-center place-self-start"
+              >{{ post.title }}</span
+            >
+            <span
+              class="text-xs text-gray-700 lg:place-self-center place-self-start"
+              >{{ post.created_at }}</span
+            >
+          </div>
+          <p class="text-sm text-gray-700 mt-5 text-justify">
+            {{ post.content }}
+          </p>
+
+          <span
+            class="text-xs font-bold cursor-pointer flex w-full justify-end p-2 pr-0"
+          >
+            {{ post.name }} {{ post.surname }}
+          </span>
+        </div>
+
+        <div class="w-full mt-2 text-sm flex">
+          <div class="relative">
+            <button
+              class="p-2 border mr-2 cursor-pointer flex justify-center items-center"
+            >
+              <i class="pi pi-thumbs-up"></i>
+            </button>
+
+            <div
+              class="w-[15px] h-[15px] absolute bg-red-500 -top-1.5 right-1 rounded-full flex justify-center items-center"
+            >
+              <span class="text-[8px] text-white font-bold">1</span>
+            </div>
+          </div>
+
+          <div class="relative">
+            <button
+              class="p-2 border mr-2 cursor-pointer flex justify-center items-cente"
+            >
+              <i class="pi pi-thumbs-down"></i>
+            </button>
+
+            <div
+              class="w-[15px] h-[15px] absolute bg-red-500 -top-1.5 right-1 rounded-full flex justify-center items-center"
+            >
+              <span class="text-[8px] text-white font-bold">1</span>
+            </div>
+          </div>
+
+          <div class="relative">
+            <button
+              class="p-2 border mr-2 cursor-pointer flex justify-center items-cente"
+            >
+              <i class="pi pi-comment"></i>
+            </button>
+
+            <div
+              class="w-[15px] h-[15px] absolute bg-red-500 -top-1.5 right-1 rounded-full flex justify-center items-center"
+            >
+              <span class="text-[8px] text-white font-bold">1</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
