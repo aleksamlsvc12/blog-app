@@ -64,10 +64,14 @@ onMounted(async () => {
       <div
         v-for="post in posts"
         :key="post.id"
-        class="border p-4 mb-4 bg-white"
+        class="border p-8 mb-4 bg-white"
       >
-        <h2 class="text-lg font-bold">{{ post.title }}</h2>
-        <p class="text-sm text-gray-700">{{ post.content }}</p>
+      <p class="text-sm cursor-pointer">{{post.name}} {{post.surname}}</p>
+      <div class="flex justify-between items-center">
+        <span class="text-lg font-bold">{{ post.title }}</span>
+        <span class="text-xs text-gray-700">{{post.created_at}}</span>
+      </div>
+        <p class="text-sm text-gray-700 mt-5 text-justify">{{ post.content }}</p>
       </div>
     </div>
   </div>
