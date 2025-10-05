@@ -19,7 +19,7 @@ onMounted(async () => {
   }
 
   try {
-    const res = await axios.get("http://localhost:8000/api/category.php", {
+    const res = await axios.get("http://localhost:8000/api/specificCategory.php", {
       params: { category: categoryName },
     });
 
