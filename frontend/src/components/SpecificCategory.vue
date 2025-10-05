@@ -40,7 +40,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="p-10 font-mono h-full">
+  <div class="p-10 font-mono h-full overflow-y-auto">
     <div v-if="loading" class="text-gray-500">Loading posts...</div>
 
     <div
@@ -64,12 +64,12 @@ onMounted(async () => {
       <div
         v-for="post in posts"
         :key="post.id"
-        class="border p-8 mb-4 bg-white"
+        class="border p-8 mb-10 bg-white"
       >
-      <p class="text-sm cursor-pointer">{{post.name}} {{post.surname}}</p>
-      <div class="flex justify-between items-center">
-        <span class="text-lg font-bold">{{ post.title }}</span>
-        <span class="text-xs text-gray-700">{{post.created_at}}</span>
+      <p class="text-sm cursor-pointer mb-2">{{post.name}} {{post.surname}}</p>
+      <div class="flex justify-between items-center lg:flex-row flex-col-reverse gap-2">
+        <span class="text-lg font-bold lg:place-self-center place-self-start">{{ post.title }}</span>
+        <span class="text-xs text-gray-700 lg:place-self-center place-self-start">{{post.created_at}}</span>
       </div>
         <p class="text-sm text-gray-700 mt-5 text-justify">{{ post.content }}</p>
       </div>
