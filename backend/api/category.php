@@ -37,10 +37,11 @@ $category_row = mysqli_fetch_assoc($result_category);
 $category_id = intval($category_row['id']);
 
 $sql_posts = "
-  SELECT id, title, content, image, created_at 
-  FROM posts
-  WHERE fk_category = '$category_id'
-  ORDER BY created_at DESC
+  SELECT p.id, p.title, p.content, p.image, p.created_at, u.name, u.surname
+  FROM posts p
+  JOIN users u ON p.fk_user = u.id
+  WHERE p.fk_category = '$category_id'
+  ORDER BY p.created_at DESC
 ";
 $result_posts = mysqli_query($conn, $sql_posts);
 
@@ -61,7 +62,10 @@ if (mysqli_num_rows($result_posts) > 0) {
       "title" => $row['title'],
       "content" => $row['content'],
       "image" => $row['image'],
-      "created_at" => $row['created_at']
+      "created_at" => $row['created_at'],
+      "fk_user" => $row["fk_user"],
+      "name" => $row["name"],
+      "surname" => $row["surname"]
     ];
   }
 
