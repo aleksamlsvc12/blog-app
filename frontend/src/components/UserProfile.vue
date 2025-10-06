@@ -5,6 +5,8 @@ import { useAuthStore } from "../stores/auth";
 
 const auth = useAuthStore();
 const userName = ref("");
+const title = ref("");
+const bio = ref("");
 const created_at = ref("");
 
 onMounted(async () => {
@@ -20,13 +22,16 @@ onMounted(async () => {
     const day = String(date.getDate());
 
     created_at.value = `${year}-${month}-${day}`;
+
+    title.value = res.data.title;
+    bio.value = res.data.bio;
   }
 });
 </script>
 
 <template>
   <div
-    class="w-full h-full lg:p-20 p-10 flex lg:flex-row flex-col justify-center items-center"
+    class="w-full h-full lg:p-20 p-10 flex lg:flex-row flex-col justify-center items-center font-mono"
   >
     <div
       class="flex lg:flex-row flex-col w-full justify-between lg:h-[70%] h-full gap-10"
@@ -43,22 +48,30 @@ onMounted(async () => {
         class="lg:w-[75%] overflow-y-auto w-full h-full border p-10 flex flex-col"
       >
         <div>
-          <p class="text-4xl font-bold">{{ userName }}</p>
+          <div class="flex justify-between items-center">
+            <span class="text-4xl font-bold">
+              {{ userName }}
+            </span>
+
+            <RouterLink to="/edit">
+              <button
+                class="border p-1 pl-2 pr-2 cursor-pointer flex justify-center items-center text-sm"
+              >
+                Edit Profile
+              </button>
+            </RouterLink>
+          </div>
+
+          <p>{{ title }}</p>
         </div>
 
         <div>
-          <p class="text-sm">Since: {{ created_at }}</p>
+          <p class="text-xs mt-2 mb-1">Since: {{ created_at }}</p>
           <hr />
         </div>
 
-        <div class="w-full lg:h-[20%] pt-2 flex justify-end">
-          <RouterLink to="/edit">
-            <button
-              class="border p-1 pl-2 pr-2 cursor-pointer flex justify-center items-center text-sm"
-            >
-              Edit Profile
-            </button>
-          </RouterLink>
+        <div class="w-full mt-4 text-sm text-justify">
+          {{ bio }}
         </div>
       </div>
     </div>
