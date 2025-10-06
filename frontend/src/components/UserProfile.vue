@@ -48,22 +48,22 @@ onMounted(async () => {
         class="lg:w-[75%] overflow-y-auto w-full h-full border p-10 flex flex-col"
       >
         <div>
-          <div class="flex justify-between items-center">
+          <div class="flex lg:flex-row flex-col justify-between ">
             <span class="text-4xl font-bold">
               {{ userName }}
             </span>
 
             <RouterLink to="/edit">
               <button
-                class="border p-1 pl-2 pr-2 cursor-pointer flex justify-center items-center text-sm"
+                class="border p-1 pl-2 pr-2 cursor-pointer flex justify-center items-center text-sm mt-2 mb-2"
               >
                 Edit Profile
               </button>
             </RouterLink>
           </div>
-
-          <p>{{ title }}</p>
         </div>
+
+        <p>{{ title }}</p>
 
         <div>
           <p class="text-xs mt-2 mb-1">Since: {{ created_at }}</p>
