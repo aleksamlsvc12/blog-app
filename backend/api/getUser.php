@@ -14,7 +14,7 @@ require_once '../data/db.php';
 
 $id = $_GET['id'] ?? 0;
 
-$stmt = $conn->prepare("SELECT name, surname, created_at FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT name, surname, title, bio, created_at FROM users WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -26,6 +26,8 @@ if ($user) {
     "name" => $user['name'],
     "surname" => $user["surname"],
     "created_at" => $user["created_at"],
+    "title" => $user["title"],
+    "bio" => $user["bio"]
   ]);
 } else {
   echo json_encode([
