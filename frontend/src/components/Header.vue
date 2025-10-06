@@ -49,12 +49,6 @@ const auth = useAuthStore();
       <RouterLink to="/login" v-if="!auth.isLoggedIn">
         <button class="border p-1 px-3 cursor-pointer">Login</button>
       </RouterLink>
-
-      <button
-        class="border p-2 px-2 cursor-pointer flex justify-center items-center"
-      >
-        <i class="pi pi-moon"></i>
-      </button>
     </div>
   </div>
 </template>
