@@ -7,6 +7,7 @@ import CategoriesView from "../views/CategoriesView.vue";
 import UserProfileView from "../views/UserProfileView.vue";
 import CreatePostView from "../views/CreatePostView.vue";
 import SpecificCategoryView from "../views/SpecificCategoryView.vue";
+import EditProfileView from "../views/EditProfileView.vue";
 
 const routes = [
   { path: "/", name: "Landing Page", component: LandingPageView },
@@ -15,7 +16,8 @@ const routes = [
   { path: "/categories", name: "Categories", component: CategoriesView },
   { path: "/profile", name: "User Profile", component: UserProfileView },
   { path: "/post", name: "Create Post", component: CreatePostView },
-  { path: "/category/:name", name: "Category", component: SpecificCategoryView, },
+  { path: "/category/:name", name: "Category", component: SpecificCategoryView },
+  { path: "/edit", name: 'Edit Profile', component: EditProfileView }
 ];
 
 const router = createRouter({
