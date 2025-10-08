@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import { useAuthStore } from "../stores/auth";
 import { useRouter } from "vue-router";
@@ -16,6 +16,26 @@ const bio = ref("");
 
 const message = ref("");
 const error = ref("");
+
+onMounted(async () => {
+  try {
+    const res = await axios.get("http://localhost:8000/api/getUser.php", {
+      params: { id: auth.user.id },
+    });
+
+    if (res.data.success) {
+      name.value = res.data.name || "";
+      surname.value = res.data.surname || "";
+      email.value = res.data.email || "";
+      title.value = res.data.title || "";
+      bio.value = res.data.bio || "";
+    } else {
+      error.value = "Could not load profile data.";
+    }
+  } catch (err) {
+    error.value = "Error while loading user data";
+  }
+});
 
 const editUser = async () => {
   message.value = "";
@@ -34,18 +54,16 @@ const editUser = async () => {
 
     if (res.data.ok) {
       alert("Profile updated!");
-      router.push('/profile');
+      router.push("/profile");
     } else {
       error.value = res.data.message || "Something went wrong.";
     }
   } catch (err) {
-    if (err.response && err.response.data && err.response.data.message) {
+    if (err.response?.data?.message) {
       error.value = err.response.data.message;
-    } 
-    else if (err.response && err.response.data && err.response.data.errors) {
+    } else if (err.response?.data?.errors) {
       error.value = Object.values(err.response.data.errors).join(", ");
-    } 
-    else {
+    } else {
       error.value = "Unknown error: " + err.message;
     }
   }
@@ -55,9 +73,7 @@ const editUser = async () => {
 <template>
   <div class="w-full h-full p-10 flex justify-center items-center font-mono">
     <div class="flex w-full justify-center h-full">
-      <div
-        class="overflow-y-auto w-full h-full border lg:p-10 p-5 flex flex-col"
-      >
+      <div class="overflow-y-auto w-full h-full border lg:p-10 p-5 flex flex-col">
         <p class="font-bold mb-4 text-2xl lg:text-left text-center">
           Edit your profile
         </p>
@@ -111,9 +127,7 @@ const editUser = async () => {
           ></textarea>
         </div>
 
-        <div
-          class="w-full pt-2 flex lg:flex-row flex-col justify-between items-center"
-        >
+        <div class="w-full pt-2 flex lg:flex-row flex-col justify-between items-center">
           <input
             type="file"
             accept=".png, .jpg, .jpeg"
@@ -129,7 +143,18 @@ const editUser = async () => {
           </button>
         </div>
 
-        <p v-if="error" class="text-red-500 mt-2 text-xs lg:text-left text-center">{{ error }}</p>
+        <p
+          v-if="error"
+          class="text-red-500 mt-2 text-xs lg:text-left text-center"
+        >
+          {{ error }}
+        </p>
+        <p
+          v-if="message"
+          class="text-green-500 mt-2 text-xs lg:text-left text-center"
+        >
+          {{ message }}
+        </p>
       </div>
     </div>
   </div>
