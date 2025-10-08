@@ -88,11 +88,18 @@ onMounted(async () => {
             {{ post.content }}
           </p>
 
-          <span
-            class="text-xs font-bold cursor-pointer flex w-full justify-end p-2 pr-0"
+          <RouterLink
+            :to="{
+              name: 'OtherUserProfile',
+              params: { id: post.fk_user },
+            }"
           >
-            {{ post.name }} {{ post.surname }}
-          </span>
+            <span
+              class="text-xs font-bold cursor-pointer flex w-full justify-end p-2 pr-0"
+            >
+              {{ post.name }} {{ post.surname }}
+            </span>
+          </RouterLink>
         </div>
 
         <div class="w-full mt-2 text-sm flex">
