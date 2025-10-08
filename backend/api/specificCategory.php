@@ -13,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once '../data/db.php';
 
 $categoryName = mysqli_real_escape_string($conn, trim($_GET['category']));
+$user_id = isset($_GET['user_id']) ? intval($_GET['user_id']) : 0;
 
 $sql_category = "SELECT id FROM categories WHERE LOWER(name) = LOWER('$categoryName')";
 $result_category = mysqli_query($conn, $sql_category);
@@ -37,12 +38,24 @@ $category_row = mysqli_fetch_assoc($result_category);
 $category_id = intval($category_row['id']);
 
 $sql_posts = "
-  SELECT p.id, p.title, p.content, p.image, p.created_at, u.name, u.surname, u.id AS fk_user
+  SELECT 
+    p.id, 
+    p.title, 
+    p.content, 
+    p.image, 
+    p.created_at, 
+    u.name, 
+    u.surname, 
+    u.id AS fk_user,
+    (SELECT COUNT(*) FROM reactions r WHERE r.fk_post = p.id AND r.type = 1) AS likes,
+    (SELECT COUNT(*) FROM reactions r WHERE r.fk_post = p.id AND r.type = 0) AS dislikes,
+    (SELECT type FROM reactions r WHERE r.fk_post = p.id AND r.fk_user = $user_id LIMIT 1) AS user_reaction
   FROM posts p
   JOIN users u ON p.fk_user = u.id
   WHERE p.fk_category = '$category_id'
   ORDER BY p.created_at DESC
 ";
+
 $result_posts = mysqli_query($conn, $sql_posts);
 
 if (!$result_posts) {
@@ -65,7 +78,10 @@ if (mysqli_num_rows($result_posts) > 0) {
       "created_at" => $row['created_at'],
       "fk_user" => $row["fk_user"],
       "name" => $row["name"],
-      "surname" => $row["surname"]
+      "surname" => $row["surname"],
+      "likes" => intval($row['likes']),
+      "dislikes" => intval($row['dislikes']),
+      "user_reaction" => isset($row['user_reaction']) ? intval($row['user_reaction']) : null
     ];
   }
 
