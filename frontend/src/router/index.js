@@ -8,16 +8,18 @@ import UserProfileView from "../views/UserProfileView.vue";
 import CreatePostView from "../views/CreatePostView.vue";
 import SpecificCategoryView from "../views/SpecificCategoryView.vue";
 import EditProfileView from "../views/EditProfileView.vue";
+import OtherUserProfileView from "../views/OtherUserProfileView.vue";
 
 const routes = [
-  { path: "/", name: "Landing Page", component: LandingPageView },
+  { path: "/", name: "LandingPage", component: LandingPageView },
   { path: "/login", name: "Login", component: LoginPageView },
   { path: "/register", name: "Register", component: RegisterPageView },
   { path: "/categories", name: "Categories", component: CategoriesView },
-  { path: "/profile", name: "User Profile", component: UserProfileView },
-  { path: "/post", name: "Create Post", component: CreatePostView },
+  { path: "/profile", name: "UserProfile", component: UserProfileView },
+  { path: "/post", name: "CreatePost", component: CreatePostView },
   { path: "/category/:name", name: "Category", component: SpecificCategoryView },
-  { path: "/edit", name: 'Edit Profile', component: EditProfileView }
+  { path: "/edit", name: 'EditProfile', component: EditProfileView },
+  { path: "/profile/:id", name: 'OtherUserProfile', component: OtherUserProfileView }
 ];
 
 const router = createRouter({
