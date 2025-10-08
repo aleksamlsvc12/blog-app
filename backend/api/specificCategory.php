@@ -37,7 +37,7 @@ $category_row = mysqli_fetch_assoc($result_category);
 $category_id = intval($category_row['id']);
 
 $sql_posts = "
-  SELECT p.id, p.title, p.content, p.image, p.created_at, u.name, u.surname
+  SELECT p.id, p.title, p.content, p.image, p.created_at, u.name, u.surname, u.id AS fk_user
   FROM posts p
   JOIN users u ON p.fk_user = u.id
   WHERE p.fk_category = '$category_id'
