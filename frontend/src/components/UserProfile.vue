@@ -15,18 +15,20 @@ onMounted(async () => {
   });
   if (res.data.success) {
     userName.value = `${res.data.name} ${res.data.surname}`;
-
-    const date = new Date(res.data.created_at);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1);
-    const day = String(date.getDate());
-
-    created_at.value = `${year}-${month}-${day}`;
-
+    created_at.value = res.data.created_at;
     title.value = res.data.title;
     bio.value = res.data.bio;
   }
 });
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+};
 </script>
 
 <template>
@@ -48,7 +50,7 @@ onMounted(async () => {
         class="lg:w-[75%] overflow-y-auto w-full h-full border p-10 flex flex-col"
       >
         <div>
-          <div class="flex lg:flex-row flex-col justify-between ">
+          <div class="flex lg:flex-row flex-col justify-between">
             <span class="text-4xl font-bold">
               {{ userName }}
             </span>
@@ -66,7 +68,7 @@ onMounted(async () => {
         <p>{{ title }}</p>
 
         <div>
-          <p class="text-xs mt-2 mb-1">Since: {{ created_at }}</p>
+          <p class="text-xs mt-2 mb-1">Since: {{ formatDate(created_at) }}</p>
           <hr />
         </div>
 

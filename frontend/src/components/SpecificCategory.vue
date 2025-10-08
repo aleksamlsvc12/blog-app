@@ -40,6 +40,17 @@ onMounted(async () => {
     loading.value = false;
   }
 });
+
+const formatDate = (dateString) => {
+  const date = new Date (dateString);
+  return date.toLocaleString("en-US", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+};
 </script>
 
 <template>
@@ -81,7 +92,7 @@ onMounted(async () => {
             >
             <span
               class="text-xs text-gray-700 lg:place-self-center place-self-start"
-              >{{ post.created_at }}</span
+              >{{ formatDate(post.created_at) }}</span
             >
           </div>
           <p class="text-sm text-gray-700 mt-5 text-justify">
