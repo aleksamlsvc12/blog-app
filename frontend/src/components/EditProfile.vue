@@ -73,7 +73,9 @@ const editUser = async () => {
 <template>
   <div class="w-full h-full p-10 flex justify-center items-center font-mono">
     <div class="flex w-full justify-center h-full">
-      <div class="overflow-y-auto w-full h-full border lg:p-10 p-5 flex flex-col">
+      <div
+        class="overflow-y-auto w-full h-full border lg:p-10 p-5 flex flex-col"
+      >
         <p class="font-bold mb-4 text-2xl lg:text-left text-center">
           Edit your profile
         </p>
@@ -127,7 +129,9 @@ const editUser = async () => {
           ></textarea>
         </div>
 
-        <div class="w-full pt-2 flex lg:flex-row flex-col justify-between items-center">
+        <div
+          class="w-full pt-2 flex lg:flex-row flex-col justify-between items-center"
+        >
           <input
             type="file"
             accept=".png, .jpg, .jpeg"
@@ -135,12 +139,22 @@ const editUser = async () => {
             class="file:px-2 file:py-1 file:border border file:mr-2 file:text-sm cursor-not-allowed text-sm lg:w-auto bg-gray-200 w-full p-2"
           />
 
-          <button
-            @click="editUser"
-            class="bg-black text-white p-2 cursor-pointer lg:w-auto w-full lg:m-0 mt-4"
-          >
-            Save Profile
-          </button>
+          <div class="flex gap-3">
+            <button
+              @click="editUser"
+              class="bg-black text-white p-2 cursor-pointer lg:w-auto w-full lg:m-0 mt-4"
+            >
+              Save Profile
+            </button>
+
+            <RouterLink to="/profile">
+              <button
+                class="bg-black text-white p-2 cursor-pointer lg:w-auto w-full lg:m-0 mt-4"
+              >
+                Cancel
+              </button>
+            </RouterLink>
+          </div>
         </div>
 
         <p
