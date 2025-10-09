@@ -306,71 +306,75 @@ const deleteComment = async (commentId, postId) => {
           </div>
         </div>
 
-        <div class="mt-4 border-t pt-4">
+        <div v-if="showComments[post.id]" class="mt-4 border-t pt-4">
+
           <div
             v-for="c in comments[post.id]"
             :key="c.id"
-            class="mb-2 flex justify-between items-start"
+            class="mb-4 border-b pb-5 bg-gray-100 p-4 break-words mt-4"
           >
-            <div class="flex-1">
-              <p class="text-xs text-gray-700">
-                <RouterLink
-                  :to="{ name: 'OtherUserProfile', params: { id: c.fk_user } }"
-                  class="font-bold cursor-pointer"
-                >
-                  {{ c.name }} {{ c.surname }} </RouterLink
-                >:
-              </p>
-
-              <div v-if="editingComment[c.id]">
-                <input
-                  v-model="editedContent[c.id]"
-                  class="border p-1 text-xs w-full mt-1"
-                />
-                <div class="mt-1 flex gap-2">
-                  <button
-                    @click="saveEdit(c, post.id)"
-                    class="text-xs bg-green-500 text-white px-2 py-1"
-                  >
-                    Save
-                  </button>
-                  <button
-                    @click="cancelEdit(c.id)"
-                    class="text-xs bg-gray-300 px-2 py-1"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-              <div v-else>
-                <p class="text-sm">{{ c.content }}</p>
-              </div>
-
-              <p class="text-[10px] text-gray-500">
+            <div
+              class="flex flex-col sm:flex-row sm:items-center sm:justify-between"
+            >
+              <RouterLink
+                :to="{ name: 'OtherUserProfile', params: { id: c.fk_user } }"
+                class="text-sm font-bold text-gray-800 cursor-pointer"
+              >
+                {{ c.name }} {{ c.surname }}
+              </RouterLink>
+              <p class="text-[10px] text-gray-500 mt-1 sm:mt-0">
                 {{ formatDate(c.created_at) }}
               </p>
             </div>
 
             <div
+              v-if="!editingComment[c.id]"
+              class="text-sm text-gray-800 whitespace-pre-wrap break-words mt-3 leading-snug"
+            >
+              {{ c.content }}
+            </div>
+
+            <div v-else class="mt-3">
+              <input
+                v-model="editedContent[c.id]"
+                class="border p-2 text-xs w-full rounded"
+              />
+              <div class="mt-2 flex flex-wrap gap-2">
+                <button
+                  @click="saveEdit(c, post.id)"
+                  class="text-xs bg-green-500 text-white px-3 py-2 cursor-pointer"
+                >
+                  Save
+                </button>
+                <button
+                  @click="cancelEdit(c.id)"
+                  class="text-xs bg-gray-300 px-3 py-1 cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+
+            <div
               v-if="c.fk_user === auth.user.id"
-              class="flex gap-2 text-xs ml-2"
+              class="flex flex-wrap gap-3 mt-3"
             >
               <button
                 @click="startEditing(c)"
-                class="text-blue-600 hover:underline"
+                class="border text-blue-600 border-blue-600 flex justify-center items-center p-2 cursor-pointer"
               >
-                Edit
+                <i class="pi pi-pencil"></i>
               </button>
               <button
                 @click="deleteComment(c.id, post.id)"
-                class="text-red-600 hover:underline"
+                class="border text-red-600 border-red-600 flex justify-center items-center p-2 cursor-pointer"
               >
-                Delete
+                <i class="pi pi-trash"></i>
               </button>
             </div>
           </div>
 
-          <div v-if="showComments[post.id]" class="mt-3 flex">
+          <div class="mt-4 flex flex-row items-center gap-2">
             <input
               v-model="newComment[post.id]"
               type="text"
@@ -379,7 +383,7 @@ const deleteComment = async (commentId, postId) => {
             />
             <button
               @click="submitComment(post.id)"
-              class="bg-blue-600 text-white p-2 ml-2 text-sm cursor-pointer"
+              class="bg-blue-600 text-white px-4 py-2  text-sm cursor-pointer"
             >
               Post
             </button>
