@@ -9,6 +9,7 @@ import CreatePostView from "../views/CreatePostView.vue";
 import SpecificCategoryView from "../views/SpecificCategoryView.vue";
 import EditProfileView from "../views/EditProfileView.vue";
 import OtherUserProfileView from "../views/OtherUserProfileView.vue";
+import UserPostsView from "../views/UserPostsView.vue";
 
 const routes = [
   { path: "/", name: "LandingPage", component: LandingPageView },
@@ -19,7 +20,8 @@ const routes = [
   { path: "/post", name: "CreatePost", component: CreatePostView },
   { path: "/category/:name", name: "Category", component: SpecificCategoryView },
   { path: "/edit", name: 'EditProfile', component: EditProfileView },
-  { path: "/profile/:id", name: 'OtherUserProfile', component: OtherUserProfileView }
+  { path: "/profile/:id", name: 'OtherUserProfile', component: OtherUserProfileView },
+  { path: "/profile/posts", name: 'ProfilePosts' ,component: UserPostsView}
 ];
 
 const router = createRouter({
