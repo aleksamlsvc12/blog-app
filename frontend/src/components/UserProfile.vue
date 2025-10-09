@@ -55,13 +55,23 @@ const formatDate = (dateString) => {
               {{ userName }}
             </span>
 
-            <RouterLink to="/edit">
-              <button
-                class="border p-1 pl-2 pr-2 cursor-pointer flex justify-center items-center text-sm mt-2 mb-2"
-              >
-                Edit Profile
-              </button>
-            </RouterLink>
+            <div class="flex gap-2">
+              <RouterLink to="/edit">
+                <button
+                  class="border p-1 pl-2 pr-2 cursor-pointer flex justify-center items-center text-sm mt-2 mb-2"
+                >
+                  Edit Profile
+                </button>
+              </RouterLink>
+
+              <RouterLink to="/profile/posts">
+                <button
+                  class="border p-1 pl-2 pr-2 cursor-pointer flex justify-center items-center text-sm mt-2 mb-2"
+                >
+                  Posts
+                </button>
+              </RouterLink>
+            </div>
           </div>
         </div>
 
