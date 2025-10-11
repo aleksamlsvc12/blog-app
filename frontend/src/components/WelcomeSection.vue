@@ -1,3 +1,9 @@
+<script setup>
+import { useAuthStore } from "../stores/auth";
+
+const auth = useAuthStore();
+</script>
+
 <template>
   <div
     class="w-full lg:w-1/2 h-full font-mono flex flex-col justify-center items-center"
@@ -13,7 +19,7 @@
         <span class="block mt-2">Write. Read. Connect with the community.</span>
       </p>
 
-      <RouterLink to="/register">
+      <RouterLink to="/register" v-if="!auth.isLoggedIn">
         <button
           class="self-start flex items-center border-1 p-3 cursor-pointer mt-5"
         >

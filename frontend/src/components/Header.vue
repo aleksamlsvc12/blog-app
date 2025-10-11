@@ -11,8 +11,7 @@ const auth = useAuthStore();
     class="lg:h-[10%] p-4 gap-4 h-auto flex flex-col lg:flex-row justify-around items-center font-mono"
   >
     <div class="text-2xl cursor-pointer">
-      <RouterLink v-if="!auth.isLoggedIn" to="/">Typo</RouterLink>
-      <span v-else>Typo</span>
+      <RouterLink to="/">Typo</RouterLink>
     </div>
 
     <div
