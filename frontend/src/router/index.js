@@ -21,7 +21,8 @@ const routes = [
   { path: "/category/:name", name: "Category", component: SpecificCategoryView },
   { path: "/edit", name: 'EditProfile', component: EditProfileView },
   { path: "/profile/:id", name: 'OtherUserProfile', component: OtherUserProfileView },
-  { path: "/profile/posts", name: 'ProfilePosts' ,component: UserPostsView}
+  { path: "/profile/:id/posts", name: 'UserPosts', component: UserPostsView },
+  { path: "/profile/posts", name: "MyPosts", component: UserPostsView },
 ];
 
 const router = createRouter({
