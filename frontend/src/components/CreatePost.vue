@@ -76,7 +76,7 @@ const createPost = async (e) => {
   <div class="w-full h-full p-8 flex justify-center items-center font-mono">
     <form
       @submit.prevent="createPost"
-      class="bg-white p-8 lg:w-1/4 w-full h-full flex flex-col justify-around items-center"
+      class="bg-gray-700 text-gray-100 rounded-2xl p-8 lg:w-1/4 w-full h-full flex flex-col justify-around items-center"
     >
       <p class="text-lg font-bold">Create post</p>
 
@@ -99,7 +99,7 @@ const createPost = async (e) => {
           <textarea
             v-model="content"
             id="post-description"
-            class="border w-full h-[120px] resize-none p-2 text-xs"
+            class="border w-full h-[120px] resize-none p-2 text-xs rounded-[5px]"
             placeholder="Write your post..."
             required
           ></textarea>
@@ -111,7 +111,7 @@ const createPost = async (e) => {
             type="file"
             accept=".png, .jpg, .jpeg"
             disabled
-            class="file:py-1 file:px-3 file:border-1 block text-xs border p-2 file:mr-2 w-full bg-gray-100 cursor-not-allowed"
+            class="file:py-1 file:px-3 file:border-1 block text-xs border p-2 file:mr-2 w-full file:rounded-[5px] rounded-[5px] cursor-not-allowed"
           />
           <p class="text-[9px] text-red-500 mt-1">
             &ast;Allowed file formats: .jpg, .jpeg, .png
@@ -123,7 +123,7 @@ const createPost = async (e) => {
           <select
             v-model="selectedCategory"
             id="category"
-            class="w-full h-[30px] border cursor-pointer text-xs p-2"
+            class="w-full h-[30px] border cursor-pointer text-xs p-2 rounded-[5px]"
             required
           >
             <option value="" disabled>Select a category</option>
@@ -140,7 +140,7 @@ const createPost = async (e) => {
 
       <button
         type="submit"
-        class="bg-black text-white p-3 cursor-pointer w-full mt-4"
+        class="bg-purple-700 text-sm text-gray-100 py-3 cursor-pointer w-full mt-4 rounded-md font-bold active:scale-95"
       >
         Post
       </button>
