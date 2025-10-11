@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import axios from "axios";
 import { useAuthStore } from "../stores/auth";
 
 const auth = useAuthStore();
+const route = useRoute();
 
 const posts = ref([]);
 const userName = ref("");
@@ -11,8 +13,10 @@ const loading = ref(true);
 
 onMounted(async () => {
   try {
+    const userId = route.params.id || auth.user.id;
+
     const userRes = await axios.get("http://localhost:8000/api/getUser.php", {
-      params: { id: auth.user.id },
+      params: { id: userId },
     });
 
     if (userRes.data.success) {
@@ -22,7 +26,7 @@ onMounted(async () => {
     const postsRes = await axios.get(
       "http://localhost:8000/api/getUserPosts.php",
       {
-        params: { user_id: auth.user.id },
+        params: { user_id: userId },
       }
     );
 
