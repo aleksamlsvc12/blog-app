@@ -39,39 +39,47 @@ const formatDate = (dateString) => {
     <div
       class="flex lg:flex-row flex-col w-full justify-between lg:h-[70%] h-full gap-10"
     >
-      <div
-        class="lg:w-1/4 w-full h-full border flex justify-center items-center p-5"
-      >
-        <div class="w-full h-full bg-gray-400 flex justify-center items-center">
+      <div class="lg:w-1/4 w-full h-full flex justify-center items-center p-5">
+        <div
+          class="w-full h-full bg-gray-400 flex justify-center items-center rounded-full"
+        >
           <i class="pi pi-user text-9xl"></i>
         </div>
       </div>
 
       <div
-        class="lg:w-[75%] overflow-y-auto w-full h-full border p-10 flex flex-col"
+        class="lg:w-[75%] overflow-y-auto w-full h-full lg:p-10 flex flex-col text-gray-100"
       >
-        <div class="flex lg:flex-row flex-col justify-between">
-          <div class="flex lg:flex-row flex-col justify-between">
-            <span class="text-4xl font-bold"> {{ userName }} </span>
-          </div>
+        <div>
+          <div class="flex lg:flex-row flex-col justify-between text-white">
+            <span class="text-4xl font-bold">
+              {{ userName }}
+            </span>
 
-          <RouterLink :to="`/profile/${route.params.id}/posts`">
-            <button
-              class="border p-1 pl-2 pr-2 cursor-pointer flex justify-center items-center text-sm mt-2 mb-2"
-            >
-              Posts
-            </button>
-          </RouterLink>
+            <div class="flex gap-2">
+              <RouterLink :to="`/profile/${route.params.id}/posts`">
+                <button
+                  class="border py-1 px-3 cursor-pointer flex justify-center items-center text-sm mt-2 mb-2 rounded-md active:scale-95"
+                >
+                  Posts
+                </button>
+              </RouterLink>
+            </div>
+          </div>
         </div>
 
         <p>{{ title }}</p>
 
         <div>
-          <p class="text-xs mt-2 mb-1">Since: {{ formatDate(created_at) }}</p>
+          <p class="text-xs mt-2 mb-1 text-gray-400">
+            Since: {{ formatDate(created_at) }}
+          </p>
           <hr />
         </div>
 
-        <div class="w-full mt-4 text-sm text-justify">{{ bio }}</div>
+        <div class="w-full mt-4 text-sm text-justify">
+          {{ bio }}
+        </div>
       </div>
     </div>
   </div>
