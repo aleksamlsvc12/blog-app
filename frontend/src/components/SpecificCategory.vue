@@ -88,6 +88,23 @@ const formatDate = (dateString) => {
 
 const reactToPost = async (postId, type, index) => {
   try {
+    const currentReaction = posts.value[index].user_reaction;
+
+    if (currentReaction === type) {
+      const res = await axios.post("http://localhost:8000/api/reactions.php", {
+        fk_post: postId,
+        fk_user: auth.user.id,
+        type: "remove",
+      });
+
+      if (res.data.status === "success") {
+        posts.value[index].likes = res.data.likes;
+        posts.value[index].dislikes = res.data.dislikes;
+        posts.value[index].user_reaction = null;
+      }
+      return;
+    }
+
     const res = await axios.post("http://localhost:8000/api/reactions.php", {
       fk_post: postId,
       fk_user: auth.user.id,
@@ -97,11 +114,10 @@ const reactToPost = async (postId, type, index) => {
     if (res.data.status === "success") {
       posts.value[index].likes = res.data.likes;
       posts.value[index].dislikes = res.data.dislikes;
-      posts.value[index].user_reaction =
-        posts.value[index].user_reaction === type ? null : type;
+      posts.value[index].user_reaction = type;
     }
   } catch (err) {
-    console.error(err);
+    console.error("Greška pri reakciji:", err);
   }
 };
 
@@ -205,64 +221,65 @@ const deleteComment = async (commentId, postId) => {
       v-else-if="hasNoContent"
       class="flex flex-col gap-4 justify-center items-center h-full w-full"
     >
-      <h1 class="text-2xl font-bold mb-2">
+      <h1 class="text-2xl text-white text-center font-bold mb-2">
         Oops! Looks like there are no blogs on this topic.
       </h1>
 
       <RouterLink to="/post">
-        <button class="bg-black text-white p-3 cursor-pointer w-full">
+        <button
+          class="bg-purple-700 text-sm text-gray-100 p-3 cursor-pointer w-full rounded-md font-bold active:scale-95 transition-all duration-300 hover:shadow-[0_0_15px_rgba(168,85,247,0.6)]"
+        >
           Create one now!
         </button>
       </RouterLink>
     </div>
 
     <div v-else>
-      <h1 class="text-2xl font-bold mb-4">
+      <h1 class="text-2xl font-bold text-white mb-4">
         {{ route.params.name.toUpperCase() }}:
       </h1>
 
       <div
         v-for="(post, index) in posts"
         :key="post.id"
-        class="border p-8 mb-10 bg-white"
+        class="rounded-2xl p-8 mb-10 bg-gray-700"
       >
-        <div class="border p-4">
+        <div class="bg-gray-900 rounded-xl p-4">
           <div
             class="flex justify-between items-center lg:flex-row flex-col-reverse gap-2"
           >
-            <span class="text-lg font-bold">{{ post.title }}</span>
-            <span class="text-xs text-gray-700">{{
+            <span class="text-lg text-white font-bold">{{ post.title }}</span>
+            <span class="text-xs text-gray-400">{{
               formatDate(post.created_at)
             }}</span>
           </div>
 
-          <p class="text-sm text-gray-700 mt-5 text-justify">
+          <p class="text-sm text-gray-100 mt-4 text-justify">
             {{ post.content }}
           </p>
 
-          <RouterLink
-            :to="{ name: 'OtherUserProfile', params: { id: post.fk_user } }"
-          >
-            <span
-              class="text-xs font-bold cursor-pointer flex w-full justify-end p-2 pr-0"
+          <div class="flex justify-end p-2 pr-0">
+            <RouterLink
+              :to="{ name: 'OtherUserProfile', params: { id: post.fk_user } }"
+              class="text-xs text-gray-100 font-bold cursor-pointer"
             >
               {{ post.name }} {{ post.surname }}
-            </span>
-          </RouterLink>
+            </RouterLink>
+          </div>
         </div>
 
         <div class="w-full mt-2 text-sm flex">
           <div class="relative">
             <button
-              class="p-2 border mr-2 cursor-pointer"
-              :class="{ 'bg-green-300': post.user_reaction === 1 }"
+              class="p-2 rounded-lg mr-2 cursor-pointer text-white flex justify-center items-center bg-gray-600 active:scale-95"
+              :class="{ 'bg-green-500': post.user_reaction === 1 }"
               @click="reactToPost(post.id, 1, index)"
             >
               <i class="pi pi-thumbs-up"></i>
             </button>
             <div
               v-if="post.likes > 0"
-              class="w-[20px] h-[20px] absolute bg-green-600 -top-2 right-1 rounded-full flex justify-center items-center"
+              class="w-[15px] h-[15px] absolute bg-green-700 -top-2 right-1 rounded-full flex justify-center items-center"
             >
               <span class="text-[10px] text-white font-bold">{{
                 post.likes
@@ -272,15 +289,15 @@ const deleteComment = async (commentId, postId) => {
 
           <div class="relative">
             <button
-              class="p-2 border mr-2 cursor-pointer"
-              :class="{ 'bg-red-300': post.user_reaction === 0 }"
+              class="p-2 rounded-lg mr-2 cursor-pointer text-white flex justify-center items-center bg-gray-600 active:scale-95"
+              :class="{ 'bg-red-500': post.user_reaction === 0 }"
               @click="reactToPost(post.id, 0, index)"
             >
               <i class="pi pi-thumbs-down"></i>
             </button>
             <div
               v-if="post.dislikes > 0"
-              class="w-[20px] h-[20px] absolute bg-red-600 -top-2 right-1 rounded-full flex justify-center items-center"
+              class="w-[15px] h-[15px] absolute bg-red-700 -top-2 right-1 rounded-full flex justify-center items-center"
             >
               <span class="text-[10px] text-white font-bold">{{
                 post.dislikes
@@ -290,14 +307,14 @@ const deleteComment = async (commentId, postId) => {
 
           <div class="relative">
             <button
-              class="p-2 border mr-2 cursor-pointer"
+              class="p-2 rounded-lg mr-2 cursor-pointer text-white flex justify-center items-center bg-gray-600 active:scale-95"
               @click="toggleCommentInput(post.id)"
             >
               <i class="pi pi-comment"></i>
             </button>
             <div
               v-if="post.comments > 0"
-              class="w-[20px] h-[20px] absolute bg-blue-600 -top-2 right-1 rounded-full flex justify-center items-center"
+              class="w-[15px] h-[15px] absolute bg-blue-700 -top-2 right-1 rounded-md flex justify-center items-center"
             >
               <span class="text-[10px] text-white font-bold">{{
                 post.comments
@@ -306,58 +323,60 @@ const deleteComment = async (commentId, postId) => {
           </div>
         </div>
 
-        <div v-if="showComments[post.id]" class="mt-4 border-t pt-4">
-
+        <div v-if="showComments[post.id]">
           <div
             v-for="c in comments[post.id]"
             :key="c.id"
-            class="mb-4 border-b pb-5 bg-gray-100 p-4 break-words mt-4"
+            class="mb-4 pb-5 bg-gray-600 rounded-2xl p-4 break-words mt-4"
           >
             <div
               class="flex flex-col sm:flex-row sm:items-center sm:justify-between"
             >
               <RouterLink
                 :to="{ name: 'OtherUserProfile', params: { id: c.fk_user } }"
-                class="text-sm font-bold text-gray-800 cursor-pointer"
+                class="text-sm font-bold cursor-pointer"
               >
                 <div class="flex gap-2 items-center">
-                  <div class="w-[30px] h-[30px] border bg-gray-300 flex justify-center items-center">
+                  <div
+                    class="w-[30px] h-[30px] rounded-[15px] bg-gray-400 flex justify-center items-center"
+                  >
                     <i class="pi pi-user"></i>
                   </div>
-                  <span>{{ c.name }} {{ c.surname }}</span>
+                  <span class="text-white">{{ c.name }} {{ c.surname }}</span>
                 </div>
-                
               </RouterLink>
-              <p class="text-[10px] text-gray-500 mt-1 sm:mt-0">
+              <p class="text-[10px] text-gray-400 mt-1 sm:mt-0">
                 {{ formatDate(c.created_at) }}
               </p>
             </div>
 
             <div
               v-if="!editingComment[c.id]"
-              class="text-sm text-gray-800 whitespace-pre-wrap break-words mt-3 leading-snug"
+              class="text-sm text-gray-100 whitespace-pre-wrap break-words mt-3 leading-snug"
             >
               {{ c.content }}
             </div>
 
             <div v-else class="mt-3">
-              <input
-                v-model="editedContent[c.id]"
-                class="border p-2 text-xs w-full rounded"
-              />
-              <div class="mt-2 flex flex-wrap gap-2">
-                <button
-                  @click="saveEdit(c, post.id)"
-                  class="text-xs bg-green-500 text-white px-3 py-2 cursor-pointer"
-                >
-                  Save
-                </button>
-                <button
-                  @click="cancelEdit(c.id)"
-                  class="text-xs bg-gray-300 px-3 py-1 cursor-pointer"
-                >
-                  Cancel
-                </button>
+              <div class="flex gap-4">
+                <input
+                  v-model="editedContent[c.id]"
+                  class="auth-inputs text-gray-100"
+                />
+                <div class="flex gap-2">
+                  <button
+                    @click="saveEdit(c, post.id)"
+                    class="text-xs bg-green-500 font-bold rounded-md text-white p-2 cursor-pointer active:scale-95"
+                  >
+                    Save
+                  </button>
+                  <button
+                    @click="cancelEdit(c.id)"
+                    class="text-xs bg-gray-300 font-bold rounded-md px-3 py-1 cursor-pointer active:scale-95"
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -367,13 +386,13 @@ const deleteComment = async (commentId, postId) => {
             >
               <button
                 @click="startEditing(c)"
-                class="border text-blue-600 border-blue-600 flex justify-center items-center p-2 cursor-pointer"
+                class="text-white bg-blue-500 rounded-md flex justify-center items-center p-2 cursor-pointer active:scale-95"
               >
                 <i class="pi pi-pencil"></i>
               </button>
               <button
                 @click="deleteComment(c.id, post.id)"
-                class="border text-red-600 border-red-600 flex justify-center items-center p-2 cursor-pointer"
+                class="text-white bg-red-500 flex rounded-md justify-center items-center p-2 cursor-pointer active:scale-95"
               >
                 <i class="pi pi-trash"></i>
               </button>
@@ -385,11 +404,11 @@ const deleteComment = async (commentId, postId) => {
               v-model="newComment[post.id]"
               type="text"
               placeholder="Write a comment..."
-              class="border p-2 w-full text-sm"
+              class="auth-inputs text-gray-100"
             />
             <button
               @click="submitComment(post.id)"
-              class="bg-blue-600 text-white px-4 py-2  text-sm cursor-pointer"
+              class="bg-blue-600 font-bold text-white px-4 py-[6px] text-sm cursor-pointer rounded-md active:scale-95"
             >
               Post
             </button>
