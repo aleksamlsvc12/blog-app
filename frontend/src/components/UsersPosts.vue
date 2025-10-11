@@ -75,12 +75,22 @@ const formatDate = (dateString) => {
 
     <div v-else class="flex flex-col gap-6 w-full max-w-5xl mx-auto text-left">
       <div v-for="post in posts" :key="post.id" class="border p-6 bg-white">
-        <h2 class="text-xl font-bold mb-2">{{ post.title }}</h2>
+        <div class="flex lg:justify-between lg:flex-row flex-col mb-3">
+          <h2 class="text-xl font-bold mb-2">{{ post.title }}</h2>
+
+          <div v-if="!route.params.id || route.params.id == auth.user.id" class="flex gap-4">
+            <button class="cursor-pointer">
+              <i class="pi pi-pencil text-sm border p-2 text-blue-600"></i>
+            </button>
+
+            <button class="cursor-pointer">
+              <i class="pi pi-trash text-sm border p-2 text-red-600"></i>
+            </button>
+          </div>
+        </div>
         <p class="text-xs text-gray-600 italic mb-2">
           Category:
-          <span class="font-semibold">{{
-            post.category || "Uncategorized"
-          }}</span>
+          <span class="font-semibold">{{ post.category }}</span>
         </p>
         <p class="text-sm text-gray-700 mb-3 break-words">
           {{ post.content }}
