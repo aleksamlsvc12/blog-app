@@ -8,9 +8,10 @@
 .auth-inputs{
   display: block;
   width: 100%;
-  border: 1px solid black;
+  border: 1px solid #F3F4F6;
   padding: 6px;
   padding-left: 10px;
   padding-right: 35px;
-  font-size: small;
+  font-size: 12px;
+  border-radius: 5px;
 }
