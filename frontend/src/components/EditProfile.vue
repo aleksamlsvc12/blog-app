@@ -74,9 +74,9 @@ const editUser = async () => {
   <div class="w-full h-full p-10 flex justify-center items-center font-mono">
     <div class="flex w-full justify-center h-full">
       <div
-        class="overflow-y-auto w-full h-full border lg:p-10 p-5 flex flex-col"
+        class="overflow-y-auto w-full h-full flex justify-center flex-col text-gray-100"
       >
-        <p class="font-bold mb-4 text-2xl lg:text-left text-center">
+        <p class="font-bold mb-4 text-2xl lg:text-left text-center text-white">
           Edit your profile
         </p>
 
@@ -84,13 +84,13 @@ const editUser = async () => {
           <input
             v-model="name"
             type="text"
-            class="border p-2 text-sm lg:w-[48%] w-full"
+            class="border p-2 text-sm lg:w-[48%] w-full rounded-md"
             placeholder="Change your name"
           />
           <input
             v-model="surname"
             type="text"
-            class="border p-2 text-sm lg:w-[48%]"
+            class="border p-2 text-sm lg:w-[48%] rounded-md"
             placeholder="Change your surname"
           />
         </div>
@@ -99,13 +99,13 @@ const editUser = async () => {
           <input
             v-model="email"
             type="text"
-            class="border p-2 text-sm lg:w-[48%] w-full"
+            class="border p-2 text-sm lg:w-[48%] w-full rounded-md"
             placeholder="Change your email"
           />
           <input
             v-model="password"
             type="text"
-            class="border p-2 text-sm lg:w-[48%]"
+            class="border p-2 text-sm lg:w-[48%] rounded-md"
             placeholder="Change your password"
           />
         </div>
@@ -114,7 +114,7 @@ const editUser = async () => {
           <input
             v-model="title"
             type="text"
-            class="border p-2 text-sm w-full"
+            class="border p-2 text-sm w-full rounded-md"
             placeholder="Enter your title"
           />
         </div>
@@ -125,7 +125,7 @@ const editUser = async () => {
             name="bio"
             id="bio"
             placeholder="Enter your biography"
-            class="border p-2 text-sm w-full resize-none h-[200px]"
+            class="border p-2 text-sm w-full resize-none h-[200px] rounded-md"
           ></textarea>
         </div>
 
@@ -136,20 +136,20 @@ const editUser = async () => {
             type="file"
             accept=".png, .jpg, .jpeg"
             disabled
-            class="file:px-2 file:py-1 file:border border file:mr-2 file:text-sm cursor-not-allowed text-sm lg:w-auto bg-gray-200 w-full p-2"
+            class="file:px-2 file:py-1 file:border border file:mr-2 file:text-sm cursor-not-allowed text-sm lg:w-auto file:rounded-md w-full p-2 rounded-md"
           />
 
-          <div class="flex gap-3">
+          <div class="flex gap-3 lg:mt-0 mt-2 lg:w-auto w-full">
             <button
               @click="editUser"
-              class="bg-black text-white p-2 cursor-pointer lg:w-auto w-full lg:m-0 mt-4"
+              class="text-xs bg-green-500 font-bold rounded-md text-white px-3 py-2 cursor-pointer active:scale-95"
             >
-              Save Profile
+              Save
             </button>
 
             <RouterLink to="/profile">
               <button
-                class="bg-black text-white p-2 cursor-pointer lg:w-auto w-full lg:m-0 mt-4"
+                class="text-xs text-black bg-gray-300 font-bold rounded-md px-3 py-2 cursor-pointer active:scale-95"
               >
                 Cancel
               </button>
