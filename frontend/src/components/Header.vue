@@ -8,9 +8,9 @@ const auth = useAuthStore();
 
 <template>
   <div
-    class="lg:h-[10%] p-4 gap-4 h-auto flex flex-col lg:flex-row justify-around items-center font-mono"
+    class="lg:h-[10%] p-4 gap-4 h-auto flex flex-col lg:flex-row justify-around items-center font-mono bg-[#111827] text-gray-200"
   >
-    <div class="text-2xl cursor-pointer">
+    <div class="text-2xl cursor-pointer font-bold">
       <RouterLink to="/">Typo</RouterLink>
     </div>
 
@@ -36,17 +36,17 @@ const auth = useAuthStore();
         to="/profile"
         v-if="auth.isLoggedIn && ((route.path !== '/login' || route.path !== '/register' || route.path !== '/') && route.path !== '/profile' )"
       >
-        <button class="border p-1 px-3 cursor-pointer">Profile</button>
+        <button class="border p-1 px-3 cursor-pointer rounded-md active:scale-95">Profile</button>
       </RouterLink>
 
       <RouterLink to="/" v-if="auth.isLoggedIn && route.path === '/profile'">
-        <button @click="auth.logout()" class="border p-1 px-3 cursor-pointer">
+        <button @click="auth.logout()" class="border p-1 px-3 cursor-pointer rounded-md active:scale-95">
           Logout
         </button>
       </RouterLink>
 
       <RouterLink to="/login" v-if="!auth.isLoggedIn">
-        <button class="border p-1 px-3 cursor-pointer">Login</button>
+        <button class="border p-1 px-3 cursor-pointer rounded-md active:scale-95">Login</button>
       </RouterLink>
     </div>
   </div>
