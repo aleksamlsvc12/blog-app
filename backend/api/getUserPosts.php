@@ -12,29 +12,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../data/db.php';
 
-$user_id = $_GET['user_id'] ?? 0;
+$user_id = intval($_GET['user_id'] ?? 0);
 
-if (!$user_id) {
-  echo json_encode([
-    "status" => "error",
-    "message" => "Missing user_id parameter"
-  ]);
+if ($user_id <= 0) {
+  echo json_encode(["status" => "error", "message" => "Invalid user ID"]);
   exit;
 }
 
-$stmt = $conn->prepare("
-  SELECT p.id, p.title, p.content, p.created_at, c.name AS category
-  FROM posts p
-  LEFT JOIN categories c ON p.fk_category = c.id
-  WHERE p.fk_user = ?
-  ORDER BY p.created_at DESC
-");
+$sql = "
+  SELECT 
+    posts.id,
+    posts.title,
+    posts.content,
+    posts.created_at,
+    posts.fk_category,
+    categories.name AS category
+  FROM posts
+  JOIN categories ON posts.fk_category = categories.id
+  WHERE posts.fk_user = ?
+  ORDER BY posts.created_at DESC
+";
+
+$stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 $posts = [];
 while ($row = $result->fetch_assoc()) {
+  $row['fk_category'] = (int)$row['fk_category'];
   $posts[] = $row;
 }
 
@@ -46,3 +52,4 @@ if (count($posts) > 0) {
 
 $stmt->close();
 $conn->close();
+?>
