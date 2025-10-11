@@ -75,17 +75,17 @@ function passVisible() {
   <div class="h-full flex justify-center items-center font-mono">
     <form
       @submit.prevent="loginUser"
-      class="flex flex-col justify-between w-[80%] lg:w-1/4 h-[70%] p-10 bg-white"
+      class="flex flex-col justify-between w-[80%] lg:w-1/4 h-[70%] p-10 bg-gray-700 text-gray-100 rounded-2xl"
     >
-      <p class="text-lg font-bold text-center">Login</p>
+      <p class="text-lg font-bold text-center text-white">Login</p>
 
       <div>
-        <label for="Email">Email </label>
-        <input v-model="email" type="email" class="auth-inputs" />
+        <label for="Email" class="text-sm">Email </label>
+        <input v-model="email" type="email" class="auth-inputs"/>
       </div>
 
       <div>
-        <label for="Password">Password </label>
+        <label for="Password" class="text-sm">Password </label>
         <div class="relative">
           <input
             v-model="password"
@@ -96,7 +96,7 @@ function passVisible() {
           <button
             @click.prevent="passVisible()"
             id="passwordButton"
-            class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-600 flex items-center justify-center"
+            class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-10 flex items-center justify-center"
           >
             <i class="pi pi-eye"></i>
           </button>
@@ -106,14 +106,14 @@ function passVisible() {
       <div>
           <button
             type="submit"
-            class="bg-black text-white p-3 cursor-pointer w-full"
+            class="w-full bg-blue-800 text-gray-100 text-sm py-3 font-bold rounded-md cursor-pointer active:scale-95"
           >
             Log in
           </button>
 
-        <p class="text-xs text-center mt-2 text-gray-800">
+        <p class="text-xs text-center mt-2 text-gray-400">
           Don't have an account?
-          <RouterLink to="/register" class="font-bold cursor-pointer"
+          <RouterLink to="/register" class="font-bold cursor-pointer text-gray-100"
             >Register</RouterLink
           >
         </p>
