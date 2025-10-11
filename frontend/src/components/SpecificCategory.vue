@@ -320,7 +320,13 @@ const deleteComment = async (commentId, postId) => {
                 :to="{ name: 'OtherUserProfile', params: { id: c.fk_user } }"
                 class="text-sm font-bold text-gray-800 cursor-pointer"
               >
-                {{ c.name }} {{ c.surname }}
+                <div class="flex gap-2 items-center">
+                  <div class="w-[30px] h-[30px] border bg-gray-300 flex justify-center items-center">
+                    <i class="pi pi-user"></i>
+                  </div>
+                  <span>{{ c.name }} {{ c.surname }}</span>
+                </div>
+                
               </RouterLink>
               <p class="text-[10px] text-gray-500 mt-1 sm:mt-0">
                 {{ formatDate(c.created_at) }}
