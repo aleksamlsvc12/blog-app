@@ -77,27 +77,27 @@ function passVisible() {
   <div class="h-full flex justify-center items-center font-mono">
     <form
       @submit.prevent="registerUser"
-      class="flex flex-col justify-between w-[80%] lg:w-1/4 h-[85%] p-10 bg-white"
+      class="flex flex-col justify-between w-[80%] lg:w-1/4 h-[85%] p-10 bg-gray-700 text-gray-100 rounded-2xl "
     >
       <p class="text-lg font-bold text-center">Register</p>
 
       <div>
-        <label for="Name"> <span class="color-red">*</span>Name </label>
+        <label for="Name" class="text-sm"> <span class="color-red">*</span>Name </label>
         <input v-model="name" type="text" class="auth-inputs" />
       </div>
 
       <div>
-        <label for="Surname"> <span class="color-red">*</span>Surname </label>
+        <label for="Surname" class="text-sm"> <span class="color-red">*</span>Surname </label>
         <input v-model="surname" type="text" class="auth-inputs" />
       </div>
 
       <div>
-        <label for="Email"> <span class="color-red">*</span>Email </label>
+        <label for="Email" class="text-sm"> <span class="color-red">*</span>Email </label>
         <input v-model="email" type="email" class="auth-inputs" />
       </div>
 
       <div>
-        <label for="Password"> <span class="color-red">*</span>Password </label>
+        <label for="Password" class="text-sm"> <span class="color-red">*</span>Password </label>
         <div class="relative">
           <input
             v-model="password"
@@ -108,7 +108,7 @@ function passVisible() {
           <button
             @click.prevent="passVisible()"
             id="passwordButton"
-            class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-600 flex items-center justify-center"
+            class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-100 flex items-center justify-center"
           >
             <i class="pi pi-eye"></i>
           </button>
@@ -118,13 +118,13 @@ function passVisible() {
       <div>
         <button
           type="submit"
-          class="bg-black text-white p-3 cursor-pointer w-full"
+          class="w-full bg-blue-800 text-gray-100 text-sm py-3 font-bold rounded-md cursor-pointer active:scale-95"
         >
           Register
         </button>
-        <p class="text-xs text-center mt-2 text-gray-800">
+        <p class="text-xs text-center mt-2 text-gray-400">
           Already have an account?
-          <RouterLink to="/login" class="font-bold cursor-pointer"
+          <RouterLink to="/login" class="font-bold cursor-pointer text-gray-100"
             >Log in</RouterLink
           >
         </p>
