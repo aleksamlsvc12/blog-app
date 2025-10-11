@@ -18,14 +18,18 @@ function goToCategory() {
 <template>
   <div
     @click="goToCategory"
-    class="border-1 w-[230px] h-[220px] p-5 flex flex-col justify-between cursor-pointer hover:scale-[0.95] transition gap-4 bg-white"
+    class="w-[230px] h-[220px] p-5 flex flex-col justify-between cursor-pointer gap-4 bg-gray-700 rounded-lg transition-all duration-300 hover:scale-[0.95] hover:shadow-[0_0_15px_rgba(243,244,246,0.5)]"
   >
-    <div class="bg-black text-white p-2">
-      <p class="text-sm font-bold text-center">{{ category.name }}</p>
+    <div class="bg-gray-900 rounded-md p-2">
+      <p class="text-sm font-bold text-center text-gray-100">
+        {{ category.name }}
+      </p>
     </div>
 
-    <div class="border h-[80%] flex justify-center items-center p-1">
-      <p class="text-center text-xs">
+    <div
+      class="bg-gray-900 rounded-md h-[80%] flex justify-center items-center p-4"
+    >
+      <p class="text-center text-xs text-gray-100">
         {{ category.description }}
       </p>
     </div>
