@@ -261,9 +261,15 @@ const deleteComment = async (commentId, postId) => {
           <div class="flex justify-end p-2 pr-0">
             <RouterLink
               :to="{ name: 'OtherUserProfile', params: { id: post.fk_user } }"
-              class="text-xs text-gray-100 font-bold cursor-pointer"
+              class="text-xs text-gray-100 font-bold cursor-pointer flex items-center gap-2"
             >
-              {{ post.name }} {{ post.surname }}
+              <div
+                class="w-[30px] h-[30px] rounded-[15px] text-black bg-gray-400 flex justify-center items-center"
+              >
+                <i class="pi pi-user"></i>
+              </div>
+
+              <span> {{ post.name }} {{ post.surname }} </span>
             </RouterLink>
           </div>
         </div>
