@@ -12,14 +12,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../data/db.php';
 
+// Read and parse incoming JSON data
 $raw = file_get_contents('php://input');
 $data = json_decode($raw, true) ?: [];
 
+// Extract and sanitize user input
 $name = trim($data['name'] ?? '');
 $surname = trim($data['surname'] ?? '');
 $email = trim($data['email'] ?? '');
 $password = (string) ($data['password'] ?? '');
 
+// Validation of input fields
 $errors = [];
 if ($name === '')
   $errors['name'] = 'Name is mandatory.';
@@ -30,6 +33,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL))
 if (strlen($password) < 8)
   $errors['password'] = 'Password must have 8 or more characters.';
 
+// If validation fails, return error with details
 if ($errors) {
   http_response_code(422);
   echo json_encode([
@@ -40,12 +44,14 @@ if ($errors) {
   exit;
 }
 
+// Check if email is already registered
 $select = mysqli_prepare(
   $conn,
   "SELECT id FROM users WHERE email = ? LIMIT 1"
 );
 
 if (!$select) {
+  // Handle DB prepare statement error
   http_response_code(500);
   echo json_encode([
     'ok' => false,
@@ -55,16 +61,12 @@ if (!$select) {
   exit;
 }
 
-mysqli_stmt_bind_param(
-  $select,
-  "s",
-  $email
-);
-
+mysqli_stmt_bind_param($select, "s", $email);
 mysqli_stmt_execute($select);
 mysqli_stmt_store_result($select);
 
 if (mysqli_stmt_num_rows($select) > 0) {
+  // Email already exists in database
   mysqli_stmt_close($select);
   http_response_code(409);
   echo json_encode([
@@ -76,8 +78,10 @@ if (mysqli_stmt_num_rows($select) > 0) {
 }
 mysqli_stmt_close($select);
 
+// Secure password hashing before storing
 $hash = password_hash($password, PASSWORD_DEFAULT);
 if (!$hash) {
+  // If hashing fails, return server error
   http_response_code(500);
   echo json_encode([
     'ok' => false,
@@ -87,6 +91,7 @@ if (!$hash) {
   exit;
 }
 
+// Insert new user into database
 $insert = mysqli_prepare(
   $conn,
   "INSERT INTO users (name, surname, email, password_hash) VALUES (?, ?, ?, ?)"
@@ -102,20 +107,14 @@ if (!$insert) {
   exit;
 }
 
-mysqli_stmt_bind_param(
-  $insert,
-  "ssss",
-  $name,
-  $surname,
-  $email,
-  $hash
-);
-
+mysqli_stmt_bind_param($insert, "ssss", $name, $surname, $email, $hash);
 $ok = mysqli_stmt_execute($insert);
 $insertErr = mysqli_error($conn);
 mysqli_stmt_close($insert);
 
+// Response
 if ($ok) {
+  // Successful registration
   http_response_code(201);
   echo json_encode([
     'ok' => true,
@@ -123,6 +122,7 @@ if ($ok) {
     'message' => 'Registration successful'
   ]);
 } else {
+  // Failed to insert user (DB issue)
   http_response_code(500);
   echo json_encode([
     'ok' => false,
@@ -130,3 +130,4 @@ if ($ok) {
     'error' => $insertErr
   ]);
 }
+?>

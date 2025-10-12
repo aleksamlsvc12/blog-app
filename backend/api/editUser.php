@@ -12,17 +12,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../data/db.php';
 
+// Decode incoming JSON data safely
 $raw = file_get_contents('php://input');
 $data = json_decode($raw, true) ?: [];
 
-$id = (int)($data['id'] ?? 0);
+// Extract and sanitize input data
+$id = (int) ($data['id'] ?? 0);
 $name = trim($data['name'] ?? '');
 $surname = trim($data['surname'] ?? '');
 $email = trim($data['email'] ?? '');
-$password = (string)($data['password'] ?? '');
+$password = (string) ($data['password'] ?? '');
 $title = trim($data['title'] ?? '');
 $bio = trim($data['bio'] ?? '');
 
+// Input Validation
+
+// Ensure valid user ID
 if ($id <= 0) {
   http_response_code(400);
   echo json_encode([
@@ -32,6 +37,7 @@ if ($id <= 0) {
   exit;
 }
 
+// Validate email format if provided
 if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
   http_response_code(422);
   echo json_encode([
@@ -41,6 +47,7 @@ if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
   exit;
 }
 
+// Check minimum password length if password provided
 if ($password !== '' && strlen($password) < 8) {
   http_response_code(422);
   echo json_encode([
@@ -50,6 +57,8 @@ if ($password !== '' && strlen($password) < 8) {
   exit;
 }
 
+// Unique Email Check
+// Prevent duplicate email usage across different accounts
 if ($email !== '') {
   $check = $conn->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
   $check->bind_param("si", $email, $id);
@@ -66,10 +75,13 @@ if ($email !== '') {
   $check->close();
 }
 
-$fields = [];
-$params = [];
+// Dynamic Query Building
+// Build SQL query dynamically depending on provided fields
+$fields = []; 
+$params = [];  
 $types = "";
 
+// Only add non-empty fields to the update query
 if ($name !== '') {
   $fields[] = "name = ?";
   $params[] = $name;
@@ -89,6 +101,7 @@ if ($email !== '') {
 }
 
 if ($password !== '') {
+  // Securely hash the password before saving to DB
   $hash = password_hash($password, PASSWORD_DEFAULT);
   $fields[] = "password_hash = ?";
   $params[] = $hash;
@@ -107,6 +120,7 @@ if ($bio !== '') {
   $types .= "s";
 }
 
+// If no fields are provided for update, skip SQL execution
 if (empty($fields)) {
   echo json_encode([
     'ok' => true,
@@ -115,13 +129,20 @@ if (empty($fields)) {
   exit;
 }
 
+// Execute Update Query
+
+// Append user ID for WHERE clause
 $params[] = $id;
 $types .= "i";
 
+// Construct final SQL dynamically
 $sql = "UPDATE users SET " . implode(", ", $fields) . " WHERE id = ?";
+
+// Prepare and bind parameters safely
 $stmt = $conn->prepare($sql);
 $stmt->bind_param($types, ...$params);
 
+// Execute the query and handle response
 if ($stmt->execute()) {
   echo json_encode([
     'ok' => true,
@@ -137,3 +158,4 @@ if ($stmt->execute()) {
 
 $stmt->close();
 $conn->close();
+?>
