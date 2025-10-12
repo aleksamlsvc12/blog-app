@@ -7,6 +7,8 @@ import { useRouter } from "vue-router";
 const auth = useAuthStore();
 const router = useRouter();
 
+const passwordInput = ref(null);
+
 const name = ref("");
 const surname = ref("");
 const email = ref("");
@@ -68,6 +70,14 @@ const editUser = async () => {
     }
   }
 };
+
+function passVisible() {
+  if (passwordInput.value.type == "text") {
+    passwordInput.value.type = "password";
+  } else {
+    passwordInput.value.type = "text";
+  }
+}
 </script>
 
 <template>
@@ -102,12 +112,24 @@ const editUser = async () => {
             class="border p-2 text-sm lg:w-[48%] w-full rounded-md"
             placeholder="Change your email"
           />
-          <input
-            v-model="password"
-            type="text"
-            class="border p-2 text-sm lg:w-[48%] rounded-md"
-            placeholder="Change your password"
-          />
+
+          <div class="relative lg:w-[48%] w-full">
+            <input
+              ref="passwordInput"
+              v-model="password"
+              type="password"
+              class="border p-2 text-sm w-full rounded-md"
+              placeholder="Change your password"
+            />
+
+            <button
+              @click.prevent="passVisible()"
+              id="passwordButton"
+              class="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-100 flex items-center justify-center"
+            >
+              <i class="pi pi-eye"></i>
+            </button>
+          </div>
         </div>
 
         <div class="flex justify-between mt-2 mb-2">
