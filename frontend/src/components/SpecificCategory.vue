@@ -242,7 +242,7 @@ const deleteComment = async (commentId, postId) => {
       <div
         v-for="(post, index) in posts"
         :key="post.id"
-        class="rounded-2xl p-8 mb-10 bg-gray-700"
+        class="rounded-2xl p-8 pb-4 mb-10 bg-gray-700"
       >
         <div class="bg-gray-900 rounded-xl p-4">
           <div

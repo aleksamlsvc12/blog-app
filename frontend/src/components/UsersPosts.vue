@@ -195,13 +195,13 @@ const formatDate = (dateString) => {
           <div class="flex gap-3">
             <button
               @click="saveEdit(post.id)"
-              class="bg-green-600 text-white px-3 py-1 text-sm rounded-md cursor-pointer active:scale-95"
+              class="bg-green-600 text-white font-bold px-3 py-1 text-sm rounded-md cursor-pointer active:scale-95"
             >
               Save
             </button>
             <button
               @click="cancelEdit"
-              class="bg-gray-300 text-black px-3 py-1 text-sm rounded-md cursor-pointer active:scale-95"
+              class="bg-gray-300 text-black font-bold px-3 py-1 text-sm rounded-md cursor-pointer active:scale-95"
             >
               Cancel
             </button>
