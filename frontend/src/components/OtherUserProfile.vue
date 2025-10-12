@@ -12,9 +12,11 @@ const created_at = ref("");
 
 onMounted(async () => {
   const res = await axios.get("http://localhost:8000/api/getUser.php", {
-    params: { id: route.params.id },
+    params: { id: route.params.id }, // Send user ID from the route
   });
+
   if (res.data.success) {
+    // Populate fields with received data
     userName.value = `${res.data.name} ${res.data.surname}`;
     created_at.value = res.data.created_at;
     title.value = res.data.title;
@@ -22,6 +24,7 @@ onMounted(async () => {
   }
 });
 
+// Format date
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleString("en-US", {
@@ -33,12 +36,14 @@ const formatDate = (dateString) => {
 </script>
 
 <template>
+  <!-- Profile layout container -->
   <div
     class="w-full h-full lg:p-20 p-10 flex lg:flex-row flex-col justify-center items-center font-mono"
   >
     <div
       class="flex lg:flex-row flex-col w-full justify-between lg:h-[70%] h-full gap-10"
     >
+      <!-- User avatar placeholder -->
       <div class="lg:w-1/4 w-full h-full flex justify-center items-center p-5">
         <div
           class="w-full h-full bg-gray-400 flex justify-center items-center rounded-full"
@@ -47,9 +52,11 @@ const formatDate = (dateString) => {
         </div>
       </div>
 
+      <!-- Profile information -->
       <div
         class="lg:w-[75%] overflow-y-auto w-full h-full lg:p-10 flex flex-col text-gray-100"
       >
+        <!-- Username and "Posts" button -->
         <div>
           <div class="flex lg:flex-row flex-col justify-between text-white">
             <span class="text-4xl font-bold">
@@ -68,8 +75,10 @@ const formatDate = (dateString) => {
           </div>
         </div>
 
+        <!-- User title -->
         <p>{{ title }}</p>
 
+        <!-- Account creation date -->
         <div>
           <p class="text-xs mt-2 mb-1 text-gray-400">
             Since: {{ formatDate(created_at) }}
@@ -77,6 +86,7 @@ const formatDate = (dateString) => {
           <hr />
         </div>
 
+        <!-- User biography -->
         <div class="w-full mt-4 text-sm text-justify">
           {{ bio }}
         </div>

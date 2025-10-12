@@ -6,9 +6,9 @@ import UserProfile from "../components/UserProfile.vue";
 </script>
 
 <template>
-  <Header/>
+  <Header />
   <Main>
-    <UserProfile/>
+    <UserProfile />
   </Main>
-  <Footer/>
+  <Footer />
 </template>

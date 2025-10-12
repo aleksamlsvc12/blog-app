@@ -1,11 +1,11 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import axios from 'axios';
+import axios from "axios";
 
 const categories = ref([]);
 
 onMounted(async () => {
-  const res = await axios.get('http://localhost:8000/api/getCategories.php');
+  const res = await axios.get("http://localhost:8000/api/getCategories.php");
   categories.value = res.data.categories;
 });
 
@@ -18,7 +18,7 @@ import CategoriesSection from "../components/CategoriesSection.vue";
 <template>
   <Header />
   <Main>
-    <CategoriesSection :categories="categories"/>
+    <CategoriesSection :categories="categories" />
   </Main>
   <Footer />
 </template>

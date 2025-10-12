@@ -9,6 +9,7 @@ const name = ref("");
 const surname = ref("");
 const email = ref("");
 const password = ref("");
+
 const message = ref("");
 const success = ref(false);
 
@@ -27,34 +28,27 @@ const registerUser = async () => {
       { headers: { "Content-Type": "application/json" } }
     );
 
-    console.log("✅", res.status, res.data);
+    console.log(res.status, res.data);
 
-    if (res.data && res.data.ok === true) {
-      success.value = true;
-    } else {
-      success.value = false;
-    }
+    // Check if registration succeeded
+    success.value = res.data && res.data.ok === true;
 
-    if (res.data && res.data.message) {
-      message.value = res.data.message;
-    } else {
-      message.value = JSON.stringify(res.data);
-    }
+    message.value = res.data?.message || JSON.stringify(res.data);
 
     alert(message.value);
 
     if (success.value) router.push("/login");
   } catch (err) {
     if (err.response) {
-      console.log("❌", err.response.status, err.response.data);
+      console.log(err.response.status, err.response.data);
     } else {
-      console.log("❌ No response");
+      console.log("No response");
     }
 
-    if (err.response && err.response.data && err.response.data.errors) {
+    if (err.response?.data?.errors) {
       const errorsObj = err.response.data.errors;
       message.value = Object.values(errorsObj).join(" ");
-    } else if (err.response && err.response.data && err.response.data.message) {
+    } else if (err.response?.data?.message) {
       message.value = err.response.data.message;
     } else {
       message.value = "Server error";
@@ -74,30 +68,41 @@ function passVisible() {
 </script>
 
 <template>
+  <!-- Registration form layout -->
   <div class="h-full flex justify-center items-center font-mono">
     <form
       @submit.prevent="registerUser"
-      class="flex flex-col justify-between w-[80%] lg:w-1/4 h-[85%] p-10 bg-gray-700 text-gray-100 rounded-2xl "
+      class="flex flex-col justify-between w-[80%] lg:w-1/4 h-[85%] p-10 bg-gray-700 text-gray-100 rounded-2xl"
     >
       <p class="text-lg font-bold text-center">Register</p>
 
+      <!-- Input fields -->
       <div>
-        <label for="Name" class="text-sm"> <span class="color-red">*</span>Name </label>
+        <label for="Name" class="text-sm">
+          <span class="color-red">*</span>Name
+        </label>
         <input v-model="name" type="text" class="auth-inputs" />
       </div>
 
       <div>
-        <label for="Surname" class="text-sm"> <span class="color-red">*</span>Surname </label>
+        <label for="Surname" class="text-sm">
+          <span class="color-red">*</span>Surname
+        </label>
         <input v-model="surname" type="text" class="auth-inputs" />
       </div>
 
       <div>
-        <label for="Email" class="text-sm"> <span class="color-red">*</span>Email </label>
+        <label for="Email" class="text-sm">
+          <span class="color-red">*</span>Email
+        </label>
         <input v-model="email" type="email" class="auth-inputs" />
       </div>
 
+      <!-- Password field -->
       <div>
-        <label for="Password" class="text-sm"> <span class="color-red">*</span>Password </label>
+        <label for="Password" class="text-sm">
+          <span class="color-red">*</span>Password
+        </label>
         <div class="relative">
           <input
             v-model="password"
@@ -115,6 +120,7 @@ function passVisible() {
         </div>
       </div>
 
+      <!-- Register button and navigation -->
       <div>
         <button
           type="submit"
@@ -122,6 +128,7 @@ function passVisible() {
         >
           Register
         </button>
+
         <p class="text-xs text-center mt-2 text-gray-400">
           Already have an account?
           <RouterLink to="/login" class="font-bold cursor-pointer text-gray-100"
@@ -129,6 +136,7 @@ function passVisible() {
           >
         </p>
 
+        <!-- Display backend or error messages -->
         <p v-if="message" class="text-center text-xs text-red-500 mt-4">
           {{ message }}
         </p>

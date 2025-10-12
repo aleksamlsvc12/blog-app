@@ -1,14 +1,14 @@
 @import "tailwindcss";
 @import "primeicons/primeicons.css";
 
-.color-red{
+.color-red {
   color: red;
 }
 
-.auth-inputs{
+.auth-inputs {
   display: block;
   width: 100%;
-  border: 1px solid #F3F4F6;
+  border: 1px solid #f3f4f6;
   padding: 6px;
   padding-left: 10px;
   padding-right: 35px;

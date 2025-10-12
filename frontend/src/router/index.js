@@ -18,16 +18,24 @@ const routes = [
   { path: "/categories", name: "Categories", component: CategoriesView },
   { path: "/profile", name: "UserProfile", component: UserProfileView },
   { path: "/post", name: "CreatePost", component: CreatePostView },
-  { path: "/category/:name", name: "Category", component: SpecificCategoryView },
-  { path: "/edit", name: 'EditProfile', component: EditProfileView },
-  { path: "/profile/:id", name: 'OtherUserProfile', component: OtherUserProfileView },
-  { path: "/profile/:id/posts", name: 'UserPosts', component: UserPostsView },
+  {
+    path: "/category/:name",
+    name: "Category",
+    component: SpecificCategoryView,
+  },
+  { path: "/edit", name: "EditProfile", component: EditProfileView },
+  {
+    path: "/profile/:id",
+    name: "OtherUserProfile",
+    component: OtherUserProfileView,
+  },
+  { path: "/profile/:id/posts", name: "UserPosts", component: UserPostsView },
   { path: "/profile/posts", name: "MyPosts", component: UserPostsView },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
-})
+  routes,
+});
 
 export default router;

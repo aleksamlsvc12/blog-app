@@ -22,10 +22,11 @@ const error = ref("");
 onMounted(async () => {
   try {
     const res = await axios.get("http://localhost:8000/api/getUser.php", {
-      params: { id: auth.user.id },
+      params: { id: auth.user.id }, // Send user ID to fetch profile data
     });
 
     if (res.data.success) {
+      // Populate input fields with current data
       name.value = res.data.name || "";
       surname.value = res.data.surname || "";
       email.value = res.data.email || "";
@@ -39,6 +40,7 @@ onMounted(async () => {
   }
 });
 
+// Send updated profile data to the backend
 const editUser = async () => {
   message.value = "";
   error.value = "";
@@ -71,6 +73,7 @@ const editUser = async () => {
   }
 };
 
+// Toggle password visibility between text and password types
 function passVisible() {
   if (passwordInput.value.type == "text") {
     passwordInput.value.type = "password";
@@ -81,6 +84,7 @@ function passVisible() {
 </script>
 
 <template>
+  <!-- Main layout container -->
   <div class="w-full h-full p-10 flex justify-center items-center font-mono">
     <div class="flex w-full justify-center h-full">
       <div
@@ -90,6 +94,7 @@ function passVisible() {
           Edit your profile
         </p>
 
+        <!-- Inputs for name and surname -->
         <div class="flex lg:flex-row flex-col gap-2 justify-between mb-2">
           <input
             v-model="name"
@@ -105,6 +110,7 @@ function passVisible() {
           />
         </div>
 
+        <!-- Email and password inputs -->
         <div class="flex lg:flex-row flex-col gap-2 justify-between mt-2 mb-2">
           <input
             v-model="email"
@@ -113,6 +119,7 @@ function passVisible() {
             placeholder="Change your email"
           />
 
+          <!-- Password field with visibility toggle -->
           <div class="relative lg:w-[48%] w-full">
             <input
               ref="passwordInput"
@@ -132,6 +139,7 @@ function passVisible() {
           </div>
         </div>
 
+        <!-- Title input -->
         <div class="flex justify-between mt-2 mb-2">
           <input
             v-model="title"
@@ -141,6 +149,7 @@ function passVisible() {
           />
         </div>
 
+        <!-- Biography textarea -->
         <div>
           <textarea
             v-model="bio"
@@ -151,6 +160,7 @@ function passVisible() {
           ></textarea>
         </div>
 
+        <!-- File upload and action buttons -->
         <div
           class="w-full pt-2 flex lg:flex-row flex-col justify-between items-center"
         >
@@ -161,6 +171,7 @@ function passVisible() {
             class="file:px-2 file:py-1 file:border border file:mr-2 file:text-sm cursor-not-allowed text-sm lg:w-auto file:rounded-md w-full p-2 rounded-md"
           />
 
+          <!-- Save and cancel buttons -->
           <div class="flex gap-3 lg:mt-0 mt-2 lg:w-auto w-full">
             <button
               @click="editUser"
@@ -179,6 +190,7 @@ function passVisible() {
           </div>
         </div>
 
+        <!-- Error and success messages -->
         <p
           v-if="error"
           class="text-red-500 mt-2 text-xs lg:text-left text-center"

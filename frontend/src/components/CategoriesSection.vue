@@ -1,20 +1,27 @@
 <script setup>
 defineProps({
-  categories:{
+  categories: {
     type: Array,
-    required: true
-  }
+    required: true,
+  },
 });
-
 
 import Category from "./Category.vue";
 </script>
 
 <template>
+  <!-- Main container with scrollable area and custom font -->
   <div class="p-10 h-full overflow-y-auto font-mono">
-    <p class="mb-10 text-2xl font-bold text-white p-4 text-center lg:text-left">Discover What Interests You</p>
-    <div class="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-y-10 justify-items-center ">
-      <Category 
+    <!-- Page heading -->
+    <p class="mb-10 text-2xl font-bold text-white p-4 text-center lg:text-left">
+      Discover What Interests You
+    </p>
+
+    <!-- Responsive grid displaying all categories -->
+    <div
+      class="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-y-10 justify-items-center"
+    >
+      <Category
         v-for="category in categories"
         :key="category.id"
         :category="category"

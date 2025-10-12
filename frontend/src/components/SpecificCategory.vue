@@ -26,6 +26,7 @@ onMounted(async () => {
   }
 
   try {
+    // Request posts for the selected category
     const res = await axios.get(
       "http://localhost:8000/api/specificCategory.php",
       {
@@ -36,6 +37,7 @@ onMounted(async () => {
       }
     );
 
+    // If data is successfully received, initialize posts with default values
     if (res.data.status === "success") {
       posts.value = res.data.posts.map((p) => ({
         ...p,
@@ -45,6 +47,7 @@ onMounted(async () => {
         comments: 0,
       }));
 
+      // Fetch comments for each post in parallel
       await Promise.all(
         posts.value.map(async (post) => {
           const commentsRes = await axios.get(
@@ -68,7 +71,7 @@ onMounted(async () => {
       hasNoContent.value = true;
     }
   } catch (err) {
-    console.error("Greška pri učitavanju:", err);
+    console.error(err);
     hasNoContent.value = true;
   } finally {
     loading.value = false;
@@ -90,6 +93,7 @@ const reactToPost = async (postId, type, index) => {
   try {
     const currentReaction = posts.value[index].user_reaction;
 
+    // Remove reaction if the same type is clicked again
     if (currentReaction === type) {
       const res = await axios.post("http://localhost:8000/api/reactions.php", {
         fk_post: postId,
@@ -105,6 +109,7 @@ const reactToPost = async (postId, type, index) => {
       return;
     }
 
+    // Add or switch reaction
     const res = await axios.post("http://localhost:8000/api/reactions.php", {
       fk_post: postId,
       fk_user: auth.user.id,
@@ -117,14 +122,16 @@ const reactToPost = async (postId, type, index) => {
       posts.value[index].user_reaction = type;
     }
   } catch (err) {
-    console.error("Greška pri reakciji:", err);
+    console.error(err);
   }
 };
 
+// Toggles visibility of comment section for each post
 const toggleCommentInput = (postId) => {
   showComments.value[postId] = !showComments.value[postId];
 };
 
+// Sends a new comment and updates the comment list
 const submitComment = async (postId) => {
   if (!newComment.value[postId] || newComment.value[postId].trim() === "")
     return;
@@ -136,6 +143,7 @@ const submitComment = async (postId) => {
       content: newComment.value[postId],
     });
 
+    // Refresh comment list after successful submission
     if (res.data.status === "success") {
       const refresh = await axios.get(
         "http://localhost:8000/api/comments.php",
@@ -152,15 +160,17 @@ const submitComment = async (postId) => {
       newComment.value[postId] = "";
     }
   } catch (err) {
-    console.error("Greška pri dodavanju komentara:", err);
+    console.error(err);
   }
 };
 
+// Starts editing a comment by storing its original content
 const startEditing = (comment) => {
   editingComment.value[comment.id] = true;
   editedContent.value[comment.id] = comment.content;
 };
 
+// Saves edited comment and refreshes the list
 const saveEdit = async (comment, postId) => {
   try {
     const res = await axios.put("http://localhost:8000/api/comments.php", {
@@ -180,15 +190,17 @@ const saveEdit = async (comment, postId) => {
       editingComment.value[comment.id] = false;
     }
   } catch (err) {
-    console.error("Greška pri izmeni komentara:", err);
+    console.error(err);
   }
 };
 
+// Cancels edit mode and resets the input
 const cancelEdit = (commentId) => {
   editingComment.value[commentId] = false;
   editedContent.value[commentId] = "";
 };
 
+// Deletes a comment after confirmation and refreshes the list
 const deleteComment = async (commentId, postId) => {
   if (!confirm("Are you sure you want to delete this comment?")) return;
 
@@ -208,13 +220,14 @@ const deleteComment = async (commentId, postId) => {
       posts.value.find((p) => p.id === postId).comments = refreshed.data.count;
     }
   } catch (err) {
-    console.error("Greška pri brisanju komentara:", err);
+    console.error(err);
   }
 };
 </script>
 
 <template>
   <div class="p-10 font-mono h-full overflow-y-auto">
+    <!-- Loading state -->
     <div v-if="loading" class="text-gray-500">Loading posts...</div>
 
     <div
@@ -234,6 +247,7 @@ const deleteComment = async (commentId, postId) => {
       </RouterLink>
     </div>
 
+    <!-- Main section showing posts and their comments -->
     <div v-else>
       <h1 class="text-2xl font-bold text-white mb-4">
         {{ route.params.name.toUpperCase() }}:
@@ -244,6 +258,7 @@ const deleteComment = async (commentId, postId) => {
         :key="post.id"
         class="rounded-2xl p-8 pb-4 mb-10 bg-gray-700"
       >
+        <!-- Post header -->
         <div class="bg-gray-900 rounded-xl p-4">
           <div
             class="flex justify-between items-center lg:flex-row flex-col-reverse gap-2"
@@ -254,10 +269,12 @@ const deleteComment = async (commentId, postId) => {
             }}</span>
           </div>
 
+          <!-- Post content -->
           <p class="text-sm text-gray-100 mt-4 text-justify">
             {{ post.content }}
           </p>
 
+          <!-- Author info and profile link -->
           <div class="flex justify-end p-2 pr-0">
             <RouterLink
               :to="{ name: 'OtherUserProfile', params: { id: post.fk_user } }"
@@ -268,13 +285,14 @@ const deleteComment = async (commentId, postId) => {
               >
                 <i class="pi pi-user"></i>
               </div>
-
               <span> {{ post.name }} {{ post.surname }} </span>
             </RouterLink>
           </div>
         </div>
 
+        <!-- Reactions -->
         <div class="w-full mt-2 text-sm flex">
+          <!-- Like button -->
           <div class="relative">
             <button
               class="p-2 rounded-lg mr-2 cursor-pointer text-white flex justify-center items-center bg-gray-600 active:scale-95"
@@ -293,6 +311,7 @@ const deleteComment = async (commentId, postId) => {
             </div>
           </div>
 
+          <!-- Dislike button -->
           <div class="relative">
             <button
               class="p-2 rounded-lg mr-2 cursor-pointer text-white flex justify-center items-center bg-gray-600 active:scale-95"
@@ -311,6 +330,7 @@ const deleteComment = async (commentId, postId) => {
             </div>
           </div>
 
+          <!-- Comment toggle button -->
           <div class="relative">
             <button
               class="p-2 rounded-lg mr-2 cursor-pointer text-white flex justify-center items-center bg-gray-600 active:scale-95"
@@ -329,12 +349,15 @@ const deleteComment = async (commentId, postId) => {
           </div>
         </div>
 
+        <!-- Comment section -->
         <div v-if="showComments[post.id]">
+          <!-- Display comments -->
           <div
             v-for="c in comments[post.id]"
             :key="c.id"
             class="mb-4 pb-5 bg-gray-600 rounded-2xl p-4 break-words mt-4"
           >
+            <!-- Comment header  -->
             <div
               class="flex flex-col sm:flex-row sm:items-center sm:justify-between"
             >
@@ -356,6 +379,7 @@ const deleteComment = async (commentId, postId) => {
               </p>
             </div>
 
+            <!-- Comment content -->
             <div
               v-if="!editingComment[c.id]"
               class="text-sm text-gray-100 whitespace-pre-wrap break-words mt-3 leading-snug"
@@ -363,6 +387,7 @@ const deleteComment = async (commentId, postId) => {
               {{ c.content }}
             </div>
 
+            <!-- Edit mode -->
             <div v-else class="mt-3">
               <div class="flex gap-4">
                 <input
@@ -386,6 +411,7 @@ const deleteComment = async (commentId, postId) => {
               </div>
             </div>
 
+            <!-- Edit/Delete buttons  -->
             <div
               v-if="c.fk_user === auth.user.id"
               class="flex flex-wrap gap-3 mt-3"
@@ -405,6 +431,7 @@ const deleteComment = async (commentId, postId) => {
             </div>
           </div>
 
+          <!-- Add new comment input -->
           <div class="mt-4 flex flex-row items-center gap-2">
             <input
               v-model="newComment[post.id]"

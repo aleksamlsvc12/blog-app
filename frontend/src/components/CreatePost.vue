@@ -1,11 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useAuthStore } from '../stores/auth';
+import { useAuthStore } from "../stores/auth";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
 const auth = useAuthStore();
-
 const router = useRouter();
 
 const categories = ref([]);
@@ -28,11 +27,12 @@ onMounted(async () => {
 const createPost = async (e) => {
   e.preventDefault();
 
+  // Collect data to send to the backend
   const postData = {
     title: title.value,
     content: content.value,
     fk_category: selectedCategory.value,
-    fk_user: auth.user?.id
+    fk_user: auth.user?.id,
   };
 
   try {
@@ -49,10 +49,12 @@ const createPost = async (e) => {
     if (res.data.status === "success") {
       alert("Post created successfully!");
 
+      // Find the selected category to redirect to its page
       const category = categories.value.find(
         (c) => Number(c.id) === Number(selectedCategory.value)
       );
 
+      // Redirect depending on whether category name exists
       if (category && category.name) {
         router.push(`/category/${category.name.toLowerCase()}`);
       } else {
@@ -80,9 +82,11 @@ const createPost = async (e) => {
     >
       <p class="text-lg font-bold">Create post</p>
 
+      <!-- Input fields for post creation -->
       <div
         class="flex flex-col justify-center items-center gap-4 h-[95%] w-full"
       >
+        <!-- Post title -->
         <div class="w-full">
           <label for="Title" class="text-sm">Title</label>
           <input
@@ -94,6 +98,7 @@ const createPost = async (e) => {
           />
         </div>
 
+        <!-- Post content -->
         <div class="w-full">
           <label for="Description" class="text-sm block">Description</label>
           <textarea
@@ -105,6 +110,7 @@ const createPost = async (e) => {
           ></textarea>
         </div>
 
+        <!-- Thumbnail input -->
         <div class="w-full">
           <label for="Thumbnail" class="text-sm">Thumbnail</label>
           <input
@@ -118,6 +124,7 @@ const createPost = async (e) => {
           </p>
         </div>
 
+        <!-- Category dropdown -->
         <div class="w-full">
           <label for="Category" class="text-sm block">Category</label>
           <select
@@ -138,6 +145,7 @@ const createPost = async (e) => {
         </div>
       </div>
 
+      <!-- Submit button -->
       <button
         type="submit"
         class="bg-purple-700 text-sm text-gray-100 py-3 cursor-pointer w-full mt-4 rounded-md font-bold active:scale-95"
@@ -145,6 +153,7 @@ const createPost = async (e) => {
         Post
       </button>
 
+      <!-- Display backend message -->
       <p v-if="message" class="mt-4 text-center text-xs">{{ message }}</p>
     </form>
   </div>

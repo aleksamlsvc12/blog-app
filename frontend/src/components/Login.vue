@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
-import { useAuthStore } from '../stores/auth';
+import { useAuthStore } from "../stores/auth";
 
 const auth = useAuthStore();
 
@@ -26,11 +26,12 @@ const loginUser = async () => {
       { headers: { "Content-Type": "application/json" } }
     );
 
-    console.log(res.status, res.data);
+    console.log(res.status, res.data)
 
+    // Check backend response for success
     if (res.data && res.data.ok === true) {
       success.value = true;
-      auth.login(res.data.user);
+      auth.login(res.data.user); // Save user data in auth store
     } else {
       success.value = false;
     }
@@ -41,6 +42,7 @@ const loginUser = async () => {
       message.value = JSON.stringify(res.data);
     }
 
+    // Redirect to categories page on successful login
     if (success.value) router.push("/categories");
   } catch (err) {
     if (err.response) {
@@ -49,6 +51,7 @@ const loginUser = async () => {
       console.log("No response");
     }
 
+    // Display validation or generic server errors
     if (err.response && err.response.data && err.response.data.errors) {
       const errorsObj = err.response.data.errors;
       message.value = Object.values(errorsObj).join(" ");
@@ -62,6 +65,7 @@ const loginUser = async () => {
   }
 };
 
+// Toggle password visibility
 function passVisible() {
   if (passwordInput.value.type == "text") {
     passwordInput.value.type = "password";
@@ -72,6 +76,7 @@ function passVisible() {
 </script>
 
 <template>
+  <!-- Main login container -->
   <div class="h-full flex justify-center items-center font-mono">
     <form
       @submit.prevent="loginUser"
@@ -79,11 +84,13 @@ function passVisible() {
     >
       <p class="text-lg font-bold text-center text-white">Login</p>
 
+      <!-- Email input -->
       <div>
         <label for="Email" class="text-sm">Email </label>
-        <input v-model="email" type="email" class="auth-inputs"/>
+        <input v-model="email" type="email" class="auth-inputs" />
       </div>
 
+      <!-- Password input toggle -->
       <div>
         <label for="Password" class="text-sm">Password </label>
         <div class="relative">
@@ -103,21 +110,25 @@ function passVisible() {
         </div>
       </div>
 
+      <!-- Login button and navigation links -->
       <div>
-          <button
-            type="submit"
-            class="w-full bg-blue-800 text-gray-100 text-sm py-3 font-bold rounded-md cursor-pointer active:scale-95"
-          >
-            Log in
-          </button>
+        <button
+          type="submit"
+          class="w-full bg-blue-800 text-gray-100 text-sm py-3 font-bold rounded-md cursor-pointer active:scale-95"
+        >
+          Log in
+        </button>
 
         <p class="text-xs text-center mt-2 text-gray-400">
           Don't have an account?
-          <RouterLink to="/register" class="font-bold cursor-pointer text-gray-100"
+          <RouterLink
+            to="/register"
+            class="font-bold cursor-pointer text-gray-100"
             >Register</RouterLink
           >
         </p>
 
+        <!-- Display backend messages -->
         <p v-if="message" class="text-center text-xs text-red-500 mt-4">
           {{ message }}
         </p>

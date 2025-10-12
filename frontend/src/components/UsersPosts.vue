@@ -17,15 +17,18 @@ const newTitle = ref("");
 const newCategory = ref(null);
 const newContent = ref("");
 
+// Determine if the viewed profile belongs to the logged-in user
 const isMyProfile = computed(
   () => !route.params.id || route.params.id == auth.user.id
 );
 
+// Load all user data (profile, categories, and posts)
 const loadPosts = async () => {
   try {
     loading.value = true;
     const userId = route.params.id || auth.user.id;
 
+    // Fetch all available categories
     const catRes = await axios.get(
       "http://localhost:8000/api/getCategories.php"
     );
@@ -33,6 +36,7 @@ const loadPosts = async () => {
       categories.value = catRes.data.categories;
     }
 
+    // Fetch user information
     const userRes = await axios.get("http://localhost:8000/api/getUser.php", {
       params: { id: userId },
     });
@@ -40,6 +44,7 @@ const loadPosts = async () => {
       userName.value = `${userRes.data.name} ${userRes.data.surname}`;
     }
 
+    // Fetch user's posts
     const postsRes = await axios.get(
       "http://localhost:8000/api/getUserPosts.php",
       {
@@ -51,6 +56,7 @@ const loadPosts = async () => {
       postsRes.data.status === "success" &&
       Array.isArray(postsRes.data.posts)
     ) {
+      // Normalize posts and ensure category IDs are numeric
       posts.value = postsRes.data.posts.map((p) => ({
         ...p,
         fk_category: Number(p.fk_category),
@@ -65,6 +71,7 @@ const loadPosts = async () => {
 
 onMounted(loadPosts);
 
+// Delete post
 const deletePost = async (id) => {
   if (!confirm("Are you sure you want to delete this post?")) return;
 
@@ -86,6 +93,7 @@ const deletePost = async (id) => {
   }
 };
 
+// Start editing mode and preload current post data
 const startEdit = (post) => {
   editingPost.value = post.id;
   newTitle.value = post.title;
@@ -93,6 +101,7 @@ const startEdit = (post) => {
   newContent.value = post.content;
 };
 
+// Cancel editing and reset form fields
 const cancelEdit = () => {
   editingPost.value = null;
   newTitle.value = "";
@@ -100,6 +109,7 @@ const cancelEdit = () => {
   newContent.value = "";
 };
 
+// Save edited post and refresh data after update
 const saveEdit = async (id) => {
   if (
     !newTitle.value.trim() ||
@@ -145,14 +155,17 @@ const formatDate = (dateString) => {
 
 <template>
   <div class="w-full h-full p-10 lg:p-20 font-mono overflow-y-auto">
+    <!-- Page header -->
     <div class="w-full pb-4 mb-8 text-center">
       <h1 class="text-3xl font-bold text-gray-100">{{ userName }}'s Posts</h1>
     </div>
 
+    <!-- Loading state -->
     <div v-if="loading" class="text-gray-400 text-center mt-10">
       Loading posts...
     </div>
 
+    <!-- Empty state -->
     <div
       v-else-if="posts.length === 0"
       class="text-gray-400 text-center mt-10 italic"
@@ -160,12 +173,14 @@ const formatDate = (dateString) => {
       No posts found.
     </div>
 
+    <!-- Posts list -->
     <div v-else class="flex flex-col gap-6 w-full max-w-5xl mx-auto text-left">
       <div
         v-for="post in posts"
         :key="post.id"
         class="p-6 bg-gray-700 rounded-xl text-gray-100"
       >
+        <!-- Edit mode -->
         <div v-if="editingPost === post.id" class="p-4 bg-gray-800 rounded-lg">
           <label class="block text-sm mb-1">Title:</label>
           <input
@@ -175,10 +190,7 @@ const formatDate = (dateString) => {
           />
 
           <label class="block text-sm mb-1">Category:</label>
-          <select
-            v-model.number="newCategory"
-            class="auth-inputs mb-4"
-          >
+          <select v-model.number="newCategory" class="auth-inputs mb-4">
             <option disabled value="">Select category</option>
             <option v-for="cat in categories" :key="cat.id" :value="cat.id">
               {{ cat.name }}
@@ -192,6 +204,7 @@ const formatDate = (dateString) => {
             placeholder="Write something..."
           ></textarea>
 
+          <!-- Edit controls -->
           <div class="flex gap-3">
             <button
               @click="saveEdit(post.id)"
@@ -208,10 +221,12 @@ const formatDate = (dateString) => {
           </div>
         </div>
 
+        <!-- View mode -->
         <div v-else>
           <div class="flex lg:justify-between lg:flex-row flex-col mb-3">
             <h2 class="text-xl font-bold mb-2">{{ post.title }}</h2>
 
+            <!-- Edit/delete buttons -->
             <div v-if="isMyProfile" class="flex gap-4">
               <button
                 @click="startEdit(post)"
@@ -228,13 +243,18 @@ const formatDate = (dateString) => {
             </div>
           </div>
 
+          <!-- Post metadata -->
           <p class="text-xs text-gray-400 italic mb-2">
             Category:
             <span class="font-semibold text-gray-200">{{ post.category }}</span>
           </p>
+
+          <!-- Post content -->
           <p class="text-sm text-gray-100 mb-3 break-words">
             {{ post.content }}
           </p>
+
+          <!-- Publication date -->
           <p class="text-xs text-gray-500">
             Published: {{ formatDate(post.created_at) }}
           </p>
