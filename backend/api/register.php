@@ -94,7 +94,7 @@ if (!$hash) {
 // Insert new user into database
 $insert = mysqli_prepare(
   $conn,
-  "INSERT INTO users (name, surname, email, password_hash) VALUES (?, ?, ?, ?)"
+  "INSERT INTO users (name, surname, email, password_hash, fk_user_type) VALUES (?, ?, ?, ?, 3)"
 );
 
 if (!$insert) {
