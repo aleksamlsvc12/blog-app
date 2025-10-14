@@ -35,7 +35,7 @@ const isAdmin = computed(() => {
           <span class="cursor-pointer">Create Post</span>
         </RouterLink>
 
-        <RouterLink to="/" v-if="auth.isLoggedIn && isAdmin">
+        <RouterLink to="/admin" v-if="auth.isLoggedIn && isAdmin">
           <span class="cursor-pointer">
             Admin Panel
           </span>

@@ -10,6 +10,7 @@ import SpecificCategoryView from "../views/SpecificCategoryView.vue";
 import EditProfileView from "../views/EditProfileView.vue";
 import OtherUserProfileView from "../views/OtherUserProfileView.vue";
 import UserPostsView from "../views/UserPostsView.vue";
+import AdminPanelView from "../views/AdminPanelView.vue";
 
 const routes = [
   { path: "/", name: "LandingPage", component: LandingPageView },
@@ -31,6 +32,7 @@ const routes = [
   },
   { path: "/profile/:id/posts", name: "UserPosts", component: UserPostsView },
   { path: "/profile/posts", name: "MyPosts", component: UserPostsView },
+  { path: "/admin", name: "AdminPanel", component: AdminPanelView },
 ];
 
 const router = createRouter({
