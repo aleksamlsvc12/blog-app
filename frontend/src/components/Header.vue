@@ -1,9 +1,14 @@
 <script setup>
 import { useAuthStore } from "../stores/auth";
 import { useRoute } from "vue-router";
+import { computed } from "vue";
 
 const route = useRoute();
 const auth = useAuthStore();
+
+const isAdmin = computed(() => {
+  return auth.user && Number(auth.user.fk_user_type) === 1;
+});
 </script>
 
 <template>
@@ -28,6 +33,12 @@ const auth = useAuthStore();
 
         <RouterLink to="/post">
           <span class="cursor-pointer">Create Post</span>
+        </RouterLink>
+
+        <RouterLink to="/" v-if="auth.isLoggedIn && isAdmin">
+          <span class="cursor-pointer">
+            Admin Panel
+          </span>
         </RouterLink>
       </template>
 
