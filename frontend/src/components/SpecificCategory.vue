@@ -1,9 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import axios from "axios";
 import { useAuthStore } from "../stores/auth";
 
+const router = useRouter();
 const route = useRoute();
 const auth = useAuthStore();
 
@@ -223,6 +224,32 @@ const deleteComment = async (commentId, postId) => {
     console.error(err);
   }
 };
+
+const deletePost = async (postId) => {
+  if (!confirm("Are you sure you want to delete this post?")) return;
+
+  try {
+    const res = await axios.delete("http://localhost:8000/api/editPost.php", {
+      data: {
+        action: "delete",
+        post_id: postId,
+        fk_user: auth.user.id,
+      },
+    });
+
+    if (res.data.status === "success") {
+      posts.value = posts.value.filter((p) => p.id !== postId);
+      alert("Post deleted successfully.");
+      router.go(0);
+    } else {
+      alert(res.data.message || "Failed to delete post.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error deleting post.");
+  }
+};
+
 </script>
 
 <template>
@@ -249,7 +276,9 @@ const deleteComment = async (commentId, postId) => {
 
     <!-- Main section showing posts and their comments -->
     <div v-else>
-      <h1 class="text-2xl font-bold text-white mb-4 pb-2 border-b border-b-gray-600">
+      <h1
+        class="text-2xl font-bold text-white mb-4 pb-2 border-b border-b-gray-600"
+      >
         {{ route.params.name.toUpperCase() }}:
       </h1>
 
@@ -275,7 +304,16 @@ const deleteComment = async (commentId, postId) => {
           </p>
 
           <!-- Author info and profile link -->
-          <div class="flex justify-end p-2 pr-0">
+          <div class="flex justify-between pt-2">
+            <div v-if="auth.user.fk_user_type === 2">
+              <button
+                @click="deletePost(post.id)"
+                class="bg-red-800 text-white text-xs font-bold px-3 py-1 rounded-md cursor-pointer active:scale-95"
+              >
+                Delete
+              </button>
+            </div>
+
             <RouterLink
               :to="{ name: 'OtherUserProfile', params: { id: post.fk_user } }"
               class="text-xs text-gray-100 font-bold cursor-pointer flex items-center gap-2"
