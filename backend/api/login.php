@@ -38,7 +38,7 @@ if ($errors) {
 }
 
 // Fetch user record for authentication
-$sql = "SELECT id, password_hash, fk_user_type FROM users WHERE email = ? LIMIT 1";
+$sql = "SELECT id, name, surname, password_hash, fk_user_type FROM users WHERE email = ? LIMIT 1";
 $select = mysqli_prepare($conn, $sql);
 
 if (!$select) {
@@ -67,7 +67,7 @@ if (mysqli_stmt_num_rows($select) !== 1) {
 }
 
 // Bind the results
-mysqli_stmt_bind_result($select, $userId, $passwordHash, $userType);
+mysqli_stmt_bind_result($select, $userId, $name, $surname, $passwordHash, $userType);
 mysqli_stmt_fetch($select);
 mysqli_stmt_close($select);
 
@@ -88,7 +88,9 @@ echo json_encode([
   'user' => [
     'id' => $userId,
     'email' => $email,
-    'fk_user_type' => (int) $userType
+    'fk_user_type' => (int) $userType,
+    'name' => $name,
+    'surname' => $surname
   ]
 ]);
 ?>
