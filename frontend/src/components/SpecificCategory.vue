@@ -249,7 +249,7 @@ const deleteComment = async (commentId, postId) => {
 
     <!-- Main section showing posts and their comments -->
     <div v-else>
-      <h1 class="text-2xl font-bold text-white mb-4">
+      <h1 class="text-2xl font-bold text-white mb-4 pb-2 border-b border-b-gray-600">
         {{ route.params.name.toUpperCase() }}:
       </h1>
 

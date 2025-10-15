@@ -157,7 +157,7 @@ const formatDate = (dateString) => {
   <div class="w-full h-full p-10 lg:p-20 font-mono overflow-y-auto">
     <!-- Page header -->
     <div class="w-full pb-4 mb-8 text-center">
-      <h1 class="text-3xl font-bold text-gray-100">{{ userName }}'s Posts</h1>
+      <h1 class="text-3xl font-bold text-gray-100 pb-2 border-b border-b-gray-600">{{ userName }}'s Posts</h1>
     </div>
 
     <!-- Loading state -->

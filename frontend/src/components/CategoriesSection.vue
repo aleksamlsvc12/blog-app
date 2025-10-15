@@ -13,7 +13,7 @@ import Category from "./Category.vue";
   <!-- Main container with scrollable area and custom font -->
   <div class="p-10 h-full overflow-y-auto font-mono">
     <!-- Page heading -->
-    <p class="mb-10 text-2xl font-bold text-white p-4 text-center lg:text-left">
+    <p class="mb-10 text-2xl font-bold text-white p-4 text-center lg:text-left pb-2 border-b border-b-gray-600">
       Discover What Interests You
     </p>
 
