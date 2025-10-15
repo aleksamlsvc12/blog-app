@@ -70,7 +70,7 @@ const formatDate = (dateString) => {
 
 <template>
   <div class="p-10 h-full font-mono overflow-y-auto">
-    <h1 class="text-2xl font-bold mb-6 text-center text-white">Registered Users</h1>
+    <h1 class="text-2xl font-bold mb-6 text-center text-white pb-2 border-b border-b-gray-600">Existing Users</h1>
 
     <div v-if="loading" class="text-center text-gray-500">Loading...</div>
     <div v-else-if="error" class="text-red-500 text-center">{{ error }}</div>

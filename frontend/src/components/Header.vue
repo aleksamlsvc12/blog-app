@@ -37,7 +37,13 @@ const isAdmin = computed(() => {
 
         <RouterLink to="/admin" v-if="auth.isLoggedIn && isAdmin">
           <span class="cursor-pointer">
-            Admin Panel
+            Users Management
+          </span>
+        </RouterLink>
+
+        <RouterLink to="/manage-category" v-if="auth.isLoggedIn && isAdmin">
+          <span class="cursor-pointer">
+            Category Management
           </span>
         </RouterLink>
       </template>
