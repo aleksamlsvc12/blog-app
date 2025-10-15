@@ -36,15 +36,11 @@ const isAdmin = computed(() => {
         </RouterLink>
 
         <RouterLink to="/admin" v-if="auth.isLoggedIn && isAdmin">
-          <span class="cursor-pointer">
-            Users Management
-          </span>
+          <span class="cursor-pointer"> Users Management </span>
         </RouterLink>
 
         <RouterLink to="/manage-category" v-if="auth.isLoggedIn && isAdmin">
-          <span class="cursor-pointer">
-            Category Management
-          </span>
+          <span class="cursor-pointer"> Category Management </span>
         </RouterLink>
       </template>
 
@@ -60,6 +56,7 @@ const isAdmin = computed(() => {
         to="/profile"
         v-if="
           auth.isLoggedIn &&
+          auth.user &&
           (route.path !== '/login' ||
             route.path !== '/register' ||
             route.path !== '/') &&
@@ -69,7 +66,9 @@ const isAdmin = computed(() => {
         <button
           class="border p-1 px-3 cursor-pointer rounded-md active:scale-95"
         >
-          Profile
+          <span v-if="auth.user.fk_user_type === 3"> {{ auth.user.name }} {{ auth.user.surname }} </span>
+          <span v-else-if="auth.user.fk_user_type === 2"> Modifier </span>
+          <span v-else> Admin </span>
         </button>
       </RouterLink>
 
