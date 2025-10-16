@@ -303,13 +303,13 @@ const deletePost = async (postId) => {
           </p>
 
           <!-- Author info and profile link -->
-          <div class="flex justify-between pt-2">
+          <div class="flex justify-between pt-2 items-center">
             <div v-if="auth.user.fk_user_type === 2">
               <button
                 @click="deletePost(post.id)"
-                class="bg-red-800 text-white text-xs font-bold px-3 py-1 rounded-md cursor-pointer active:scale-95"
+                class="flex justify-center items-center  bg-red-800 text-white text-xs font-bold px-3 py-1 rounded-md cursor-pointer active:scale-95"
               >
-                Delete
+                <i class="pi pi-trash p-1"></i>
               </button>
             </div>
 
