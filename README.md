@@ -1,16 +1,16 @@
-# Blog platforma
+# Blog Platform
 
-Projekat je edukativnog karaktera i deo je zavrsnog rada na ATUSS, odsek VISER.  
+This project is educational in nature and represents a part of the final thesis at ATUSS, Department of VISER.
 **Student:** Aleksa Milosevic, RT-10/22  
-**Mentor:** dr Gabrijela Dimic  
-**Predmet:** Programiranje veb aplikacija
+**Mentor:** Dr. Gabrijela Dimic  
+**Course:** Web Application Programming
 
 ---
 
-**Tema:**  
-Razvoj i implementacija veb aplikacije za blog platformu koristeci savremene tehnologije.
+**Topic:**  
+Development and implementation of a web application for a blog platform using modern technologies.
 
-## Tehnologije
+## Technologies
 
-- **Frontend:** Vue (Vite) i Tailwind CSS  
+- **Frontend:** Vue (Vite) and Tailwind CSS  
 - **Backend:** PHP
