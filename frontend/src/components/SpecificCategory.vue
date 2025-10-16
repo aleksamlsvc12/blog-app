@@ -292,7 +292,7 @@ const deletePost = async (postId) => {
             class="flex justify-between items-center lg:flex-row flex-col-reverse gap-2"
           >
             <!-- Author info and profile link -->
-            <div class="flex justify-between pt-2">
+            <div class="flex flex-row-reverse justify-between pt-2 w-full">
               <div v-if="auth.user.fk_user_type === 2">
                 <button
                   @click="deletePost(post.id)"
