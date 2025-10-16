@@ -292,7 +292,13 @@ const deletePost = async (postId) => {
             class="flex justify-between items-center lg:flex-row flex-col-reverse gap-2"
           >
             <!-- Author info and profile link -->
-            <div class="flex flex-row-reverse justify-between pt-2 w-full">
+            <div
+              class="flex justify-between items-center pt-2 w-full"
+              :class="
+                auth.user.fk_user_type === 2 ? 'flex-row-reverse' : 'flex-row'
+              "
+            >
+              <!-- Moderator delete button -->
               <div v-if="auth.user.fk_user_type === 2">
                 <button
                   @click="deletePost(post.id)"
@@ -302,12 +308,13 @@ const deletePost = async (postId) => {
                 </button>
               </div>
 
+              <!-- Author info and profile link -->
               <RouterLink
                 :to="{ name: 'OtherUserProfile', params: { id: post.fk_user } }"
                 class="text-xs text-gray-100 font-bold cursor-pointer flex items-center gap-2"
               >
                 <div
-                  class="w-[30px] h-[30px] rounded-[15px] overflow-hidden bg-gray-400 flex"
+                  class="w-[30px] h-[30px] rounded-[15px] overflow-hidden bg-gray-400 flex items-center justify-center"
                 >
                   <img
                     v-if="post.profile_img"
@@ -317,7 +324,7 @@ const deletePost = async (postId) => {
                   />
                   <i v-else class="pi pi-user text-black"></i>
                 </div>
-                <span> {{ post.name }} {{ post.surname }} </span>
+                <span>{{ post.name }} {{ post.surname }}</span>
               </RouterLink>
             </div>
           </div>
@@ -330,11 +337,11 @@ const deletePost = async (postId) => {
           </div>
 
           <!-- Post content -->
-          <div v-if="post.image" class="my-4">
+          <div v-if="post.image" class="lg:p-10 p-2 flex justify-center">
             <img
               :src="`http://localhost:8000/${post.image}`"
               alt="Post thumbnail"
-              class="w-full max-h-[300px] object-fit rounded-lg"
+              class="w-full lg:max-w-[1000px] h-full lg:max-h-[300px] object-fit rounded-lg"
             />
           </div>
 
