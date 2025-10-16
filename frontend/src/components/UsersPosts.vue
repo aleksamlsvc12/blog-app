@@ -157,7 +157,11 @@ const formatDate = (dateString) => {
   <div class="w-full h-full p-10 lg:p-20 font-mono overflow-y-auto">
     <!-- Page header -->
     <div class="w-full pb-4 mb-8 text-center">
-      <h1 class="text-3xl font-bold text-gray-100 pb-2 border-b border-b-gray-600">{{ userName }}'s Posts</h1>
+      <h1
+        class="text-3xl font-bold text-gray-100 pb-2 border-b border-b-gray-600"
+      >
+        {{ userName }}'s Posts
+      </h1>
     </div>
 
     <!-- Loading state -->
@@ -248,6 +252,15 @@ const formatDate = (dateString) => {
             Category:
             <span class="font-semibold text-gray-200">{{ post.category }}</span>
           </p>
+
+          <!-- Thumbnail prikaz -->
+          <div v-if="post.image" class="my-3">
+            <img
+              :src="`http://localhost:8000/${post.image}`"
+              alt="Post thumbnail"
+              class="w-full max-h-[300px] object-cover rounded-lg"
+            />
+          </div>
 
           <!-- Post content -->
           <p class="text-sm text-gray-100 mb-3 break-words">
