@@ -12,13 +12,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../data/db.php';
 
-// --- Ako je zahtev POST sa form-data ---
 $title = mysqli_real_escape_string($conn, trim($_POST['title'] ?? ''));
 $content = mysqli_real_escape_string($conn, trim($_POST['content'] ?? ''));
 $fk_category = intval($_POST['fk_category'] ?? 0);
 $fk_user = intval($_POST['fk_user'] ?? 0);
 
-// Validacija
 if (empty($title) || empty($content) || !$fk_category || !$fk_user) {
   echo json_encode(["status" => "error", "message" => "All fields are required."]);
   exit;
@@ -26,7 +24,6 @@ if (empty($title) || empty($content) || !$fk_category || !$fk_user) {
 
 $imagePath = null;
 
-// Ako postoji thumbnail fajl
 if (!empty($_FILES['thumbnail']['name'])) {
   $targetDir = "../uploads/thumbnails/";
   if (!file_exists($targetDir)) {
@@ -51,7 +48,6 @@ if (!empty($_FILES['thumbnail']['name'])) {
   }
 }
 
-// Insert u bazu
 $sql = "INSERT INTO posts (title, content, image, created_at, fk_user, fk_category)
         VALUES ('$title', '$content', " . ($imagePath ? "'$imagePath'" : "NULL") . ", NOW(), '$fk_user', '$fk_category')";
 

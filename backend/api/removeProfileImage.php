@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../data/db.php';
 
-$id = (int)($_POST['id'] ?? 0);
+$id = (int) ($_POST['id'] ?? 0);
 
 if ($id <= 0) {
   echo json_encode(['ok' => false, 'message' => 'Invalid user ID']);

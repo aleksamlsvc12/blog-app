@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       u.name, 
       u.surname, 
       u.id AS fk_user,
-      u.profile_img  -- 👈 dodato
+      u.profile_img
     FROM comments c
     JOIN users u ON c.fk_user = u.id
     WHERE c.fk_post = $fk_post
@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       "fk_user" => intval($row['fk_user']),
       "name" => $row['name'],
       "surname" => $row['surname'],
-      "profile_img" => $row['profile_img'] // 👈 dodato
+      "profile_img" => $row['profile_img']
     ];
   }
 

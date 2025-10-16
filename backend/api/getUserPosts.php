@@ -20,13 +20,13 @@ if ($user_id <= 0) {
   exit;
 }
 
-// ✅ Fetch posts with image field
+// Fetch posts with image field
 $sql = "
   SELECT 
     p.id,
     p.title,
     p.content,
-    p.image,            -- 👈 dodato thumbnail polje
+    p.image,            
     p.created_at,
     p.fk_category,
     c.name AS category

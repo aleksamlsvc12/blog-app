@@ -50,7 +50,7 @@ $sql_posts = "
     u.name, 
     u.surname, 
     u.id AS fk_user,
-    u.profile_img,  -- 👈 Dodato: uzimamo profilnu sliku korisnika
+    u.profile_img, 
     (SELECT COUNT(*) FROM reactions r WHERE r.fk_post = p.id AND r.type = 1) AS likes,
     (SELECT COUNT(*) FROM reactions r WHERE r.fk_post = p.id AND r.type = 0) AS dislikes,
     (SELECT type FROM reactions r WHERE r.fk_post = p.id AND r.fk_user = $user_id LIMIT 1) AS user_reaction
@@ -83,7 +83,7 @@ if (mysqli_num_rows($result_posts) > 0) {
       "fk_user" => $row["fk_user"],
       "name" => $row["name"],
       "surname" => $row["surname"],
-      "profile_img" => $row["profile_img"], // 👈 Dodato ovde
+      "profile_img" => $row["profile_img"],
       "likes" => intval($row['likes']),
       "dislikes" => intval($row['dislikes']),
       "user_reaction" => isset($row['user_reaction']) ? intval($row['user_reaction']) : null

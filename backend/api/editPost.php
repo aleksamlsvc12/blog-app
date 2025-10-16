@@ -12,13 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../data/db.php';
 
-/* ======================================================
-   🧠 Get action dynamically (supports JSON for DELETE/PUT)
-   ====================================================== */
 $action = null;
 $post_id = null;
 
-// Ako je JSON (DELETE/PUT), čitamo sirovi body
 if (in_array($_SERVER['REQUEST_METHOD'], ['DELETE', 'PUT'])) {
   $raw = file_get_contents("php://input");
   $data = json_decode($raw, true);
@@ -34,9 +30,9 @@ if (!$action) {
   exit;
 }
 
-/* ======================================================
-   🗑 DELETE POST — remove thumbnail file too
-   ====================================================== */
+
+//DELETE POST — remove thumbnail file too
+
 if ($action === 'delete') {
   if ($post_id <= 0) {
     echo json_encode(["status" => "error", "message" => "Invalid post ID"]);
@@ -70,9 +66,8 @@ if ($action === 'delete') {
   exit;
 }
 
-/* ======================================================
-   ✏️ EDIT POST — can update text, replace or remove image
-   ====================================================== */
+
+//EDIT POST — can update text, replace or remove image
 if ($action === 'edit') {
   $title = trim($_POST['title'] ?? '');
   $fk_category = intval($_POST['category'] ?? 0);
@@ -97,7 +92,8 @@ if ($action === 'edit') {
   // if user uploaded a new file
   if (!empty($_FILES['thumbnail']['name'])) {
     $targetDir = "../uploads/thumbnails/";
-    if (!file_exists($targetDir)) mkdir($targetDir, 0777, true);
+    if (!file_exists($targetDir))
+      mkdir($targetDir, 0777, true);
     $fileName = time() . "_" . basename($_FILES["thumbnail"]["name"]);
     $targetFile = $targetDir . $fileName;
     $ext = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
@@ -110,10 +106,12 @@ if ($action === 'edit') {
 
     if (move_uploaded_file($_FILES["thumbnail"]["tmp_name"], $targetFile)) {
       $newImagePath = "uploads/thumbnails/" . $fileName;
-      if ($oldImage && file_exists("../" . $oldImage)) unlink("../" . $oldImage);
+      if ($oldImage && file_exists("../" . $oldImage))
+        unlink("../" . $oldImage);
     }
   } elseif ($remove_image) {
-    if ($oldImage && file_exists("../" . $oldImage)) unlink("../" . $oldImage);
+    if ($oldImage && file_exists("../" . $oldImage))
+      unlink("../" . $oldImage);
     $newImagePath = null;
   }
 
