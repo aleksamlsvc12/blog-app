@@ -9,18 +9,19 @@ const userName = ref("");
 const title = ref("");
 const bio = ref("");
 const created_at = ref("");
+const profileImg = ref(null);
 
 onMounted(async () => {
   const res = await axios.get("http://localhost:8000/api/getUser.php", {
-    params: { id: route.params.id }, // Send user ID from the route
+    params: { id: route.params.id },
   });
 
   if (res.data.success) {
-    // Populate fields with received data
     userName.value = `${res.data.name} ${res.data.surname}`;
     created_at.value = res.data.created_at;
     title.value = res.data.title;
     bio.value = res.data.bio;
+    profileImg.value = res.data.image || null;
   }
 });
 
@@ -43,12 +44,20 @@ const formatDate = (dateString) => {
     <div
       class="flex lg:flex-row flex-col w-full justify-between lg:h-[70%] h-full gap-10"
     >
-      <!-- User avatar placeholder -->
+      <!-- User avatar -->
       <div class="lg:w-1/4 w-full h-full flex justify-center items-center p-5">
         <div
-          class="w-full h-full bg-gray-400 flex justify-center items-center rounded-full"
+          class="w-full h-full flex justify-center items-center rounded-full overflow-hidden bg-gray-400"
         >
-          <i class="pi pi-user text-9xl"></i>
+          <!-- Ako korisnik ima sliku, prikaži je -->
+          <img
+            v-if="profileImg"
+            :src="`http://localhost:8000/${profileImg}`"
+            alt="User profile"
+            class="object-cover w-full h-full"
+          />
+          <!-- Inače, default ikonica -->
+          <i v-else class="pi pi-user text-9xl text-gray-700"></i>
         </div>
       </div>
 
