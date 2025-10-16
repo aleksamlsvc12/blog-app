@@ -12,7 +12,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../data/db.php';
 
-$action = $_POST['action'] ?? null;
+/* ======================================================
+   🧠 Get action dynamically (supports JSON for DELETE/PUT)
+   ====================================================== */
+$action = null;
+$post_id = null;
+
+// Ako je JSON (DELETE/PUT), čitamo sirovi body
+if (in_array($_SERVER['REQUEST_METHOD'], ['DELETE', 'PUT'])) {
+  $raw = file_get_contents("php://input");
+  $data = json_decode($raw, true);
+  $action = $data['action'] ?? null;
+  $post_id = intval($data['post_id'] ?? 0);
+} else {
+  $action = $_POST['action'] ?? null;
+  $post_id = intval($_POST['post_id'] ?? 0);
+}
+
 if (!$action) {
   echo json_encode(["status" => "error", "message" => "No action provided"]);
   exit;
@@ -22,7 +38,6 @@ if (!$action) {
    🗑 DELETE POST — remove thumbnail file too
    ====================================================== */
 if ($action === 'delete') {
-  $post_id = intval($_POST['post_id'] ?? 0);
   if ($post_id <= 0) {
     echo json_encode(["status" => "error", "message" => "Invalid post ID"]);
     exit;
@@ -43,11 +58,14 @@ if ($action === 'delete') {
   $stmt->close();
 
   if ($success) {
-    if ($imagePath && file_exists("../" . $imagePath)) unlink("../" . $imagePath);
+    if ($imagePath && file_exists("../" . $imagePath)) {
+      unlink("../" . $imagePath);
+    }
     echo json_encode(["status" => "success", "message" => "Post deleted with image"]);
   } else {
     echo json_encode(["status" => "error", "message" => "Failed to delete post"]);
   }
+
   $conn->close();
   exit;
 }
@@ -56,7 +74,6 @@ if ($action === 'delete') {
    ✏️ EDIT POST — can update text, replace or remove image
    ====================================================== */
 if ($action === 'edit') {
-  $post_id = intval($_POST['post_id'] ?? 0);
   $title = trim($_POST['title'] ?? '');
   $fk_category = intval($_POST['category'] ?? 0);
   $content = trim($_POST['content'] ?? '');
@@ -93,11 +110,9 @@ if ($action === 'edit') {
 
     if (move_uploaded_file($_FILES["thumbnail"]["tmp_name"], $targetFile)) {
       $newImagePath = "uploads/thumbnails/" . $fileName;
-      // delete old one if existed
       if ($oldImage && file_exists("../" . $oldImage)) unlink("../" . $oldImage);
     }
   } elseif ($remove_image) {
-    // user requested to remove current image
     if ($oldImage && file_exists("../" . $oldImage)) unlink("../" . $oldImage);
     $newImagePath = null;
   }
@@ -113,6 +128,7 @@ if ($action === 'edit') {
   } else {
     echo json_encode(["status" => "error", "message" => "Update failed"]);
   }
+
   $conn->close();
   exit;
 }
