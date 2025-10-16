@@ -18,7 +18,7 @@ require_once '../data/db.php';
 $id = $_GET['id'] ?? 0;
 
 // Use a prepared statement to prevent SQL injection
-$stmt = $conn->prepare("SELECT name, surname, title, bio, created_at FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT name, surname, title, bio, created_at, profile_img FROM users WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
 
@@ -34,7 +34,8 @@ if ($user) {
     "surname" => $user["surname"],
     "created_at" => $user["created_at"],
     "title" => $user["title"],
-    "bio" => $user["bio"]
+    "bio" => $user["bio"],
+    "image" => $user["profile_img"]
   ]);
 } else {
   // If no user found, send an error response
