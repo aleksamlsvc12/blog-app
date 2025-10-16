@@ -96,7 +96,7 @@ const formatDate = (dateString) => {
         </div>
 
         <!-- User biography -->
-        <div class="w-full mt-4 text-sm text-justify">
+        <div class="w-full mt-4 text-sm text-justify overflow-y-auto pl-4 pr-4">
           {{ bio }}
         </div>
       </div>
