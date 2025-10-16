@@ -410,10 +410,17 @@ const deletePost = async (postId) => {
               >
                 <div class="flex gap-2 items-center">
                   <div
-                    class="w-[30px] h-[30px] rounded-[15px] bg-gray-400 flex justify-center items-center"
+                    class="w-[30px] h-[30px] rounded-[15px] overflow-hidden bg-gray-400 flex justify-center items-center"
                   >
-                    <i class="pi pi-user"></i>
+                    <img
+                      v-if="c.profile_img"
+                      :src="`http://localhost:8000/${c.profile_img}`"
+                      alt="User image"
+                      class="object-cover w-full h-full"
+                    />
+                    <i v-else class="pi pi-user text-black"></i>
                   </div>
+
                   <span class="text-white">{{ c.name }} {{ c.surname }}</span>
                 </div>
               </RouterLink>
