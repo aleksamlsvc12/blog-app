@@ -12,39 +12,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../data/db.php';
 
-// Decode JSON request body
-$input = json_decode(file_get_contents("php://input"), true);
+// --- Ako je zahtev POST sa form-data ---
+$title = mysqli_real_escape_string($conn, trim($_POST['title'] ?? ''));
+$content = mysqli_real_escape_string($conn, trim($_POST['content'] ?? ''));
+$fk_category = intval($_POST['fk_category'] ?? 0);
+$fk_user = intval($_POST['fk_user'] ?? 0);
 
-// Sanitize and validate user input to prevent SQL injection and empty fields
-$title = mysqli_real_escape_string($conn, trim($input['title'] ?? ''));
-$content = mysqli_real_escape_string($conn, trim($input['content'] ?? ''));
-$fk_category = intval($input['fk_category'] ?? 0);
-$fk_user = intval($input['fk_user'] ?? 0);
-
-// Validate that all required fields are present and non-empty
+// Validacija
 if (empty($title) || empty($content) || !$fk_category || !$fk_user) {
-  echo json_encode([
-    "status" => "error",
-    "message" => "All fields are required."
-  ]);
+  echo json_encode(["status" => "error", "message" => "All fields are required."]);
   exit;
 }
 
-// Insert new post into the database with current timestamp
-$sql = "INSERT INTO posts (title, content, created_at, fk_user, fk_category)
-        VALUES ('$title', '$content', NOW(), '$fk_user', '$fk_category')";
+$imagePath = null;
 
-// Execute query and send appropriate JSON response
+// Ako postoji thumbnail fajl
+if (!empty($_FILES['thumbnail']['name'])) {
+  $targetDir = "../uploads/thumbnails/";
+  if (!file_exists($targetDir)) {
+    mkdir($targetDir, 0777, true);
+  }
+
+  $fileName = time() . "_" . basename($_FILES["thumbnail"]["name"]);
+  $targetFile = $targetDir . $fileName;
+  $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+  $allowedTypes = ["jpg", "jpeg", "png"];
+  if (!in_array($imageFileType, $allowedTypes)) {
+    echo json_encode(["status" => "error", "message" => "Invalid file type. Only JPG, JPEG, PNG allowed."]);
+    exit;
+  }
+
+  if (move_uploaded_file($_FILES["thumbnail"]["tmp_name"], $targetFile)) {
+    $imagePath = "uploads/thumbnails/" . $fileName;
+  } else {
+    echo json_encode(["status" => "error", "message" => "Failed to upload thumbnail."]);
+    exit;
+  }
+}
+
+// Insert u bazu
+$sql = "INSERT INTO posts (title, content, image, created_at, fk_user, fk_category)
+        VALUES ('$title', '$content', " . ($imagePath ? "'$imagePath'" : "NULL") . ", NOW(), '$fk_user', '$fk_category')";
+
 if (mysqli_query($conn, $sql)) {
-  echo json_encode([
-    "status" => "success",
-    "message" => "Post created successfully."
-  ]);
+  echo json_encode(["status" => "success", "message" => "Post created successfully."]);
 } else {
-  // Return error message including database error for debugging
-  echo json_encode([
-    "status" => "error",
-    "message" => "Database error: " . mysqli_error($conn)
-  ]);
+  echo json_encode(["status" => "error", "message" => "Database error: " . mysqli_error($conn)]);
 }
 ?>
