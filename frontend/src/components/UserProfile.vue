@@ -8,18 +8,21 @@ const userName = ref("");
 const title = ref("");
 const bio = ref("");
 const created_at = ref("");
+const image = ref("");
 
 onMounted(async () => {
   const res = await axios.get("http://localhost:8000/api/getUser.php", {
     params: { id: auth.user.id },
   });
 
-  // If API returns success, populate profile fields
   if (res.data.success) {
     userName.value = `${res.data.name} ${res.data.surname}`;
     created_at.value = res.data.created_at;
     title.value = res.data.title;
     bio.value = res.data.bio;
+    image.value = res.data.image
+      ? `http://localhost:8000/${res.data.image}`
+      : "";
   }
 });
 
@@ -45,9 +48,15 @@ const formatDate = (dateString) => {
       <!-- User avatar -->
       <div class="lg:w-1/4 w-full h-full flex justify-center items-center p-5">
         <div
-          class="w-full h-full bg-gray-400 flex justify-center items-center rounded-full"
+          class="w-[300px] h-[300px] rounded-full overflow-hidden border border-white flex justify-center items-center bg-gray-700"
         >
-          <i class="pi pi-user text-9xl"></i>
+          <img
+            v-if="image"
+            :src="image"
+            alt="Profile"
+            class="object-fit  w-full h-full"
+          />
+          <i v-else class="pi pi-user text-9xl text-gray-300"></i>
         </div>
       </div>
 

@@ -15,6 +15,7 @@ const email = ref("");
 const password = ref("");
 const title = ref("");
 const bio = ref("");
+const image = ref(null);
 
 const message = ref("");
 const error = ref("");
@@ -22,11 +23,9 @@ const error = ref("");
 onMounted(async () => {
   try {
     const res = await axios.get("http://localhost:8000/api/getUser.php", {
-      params: { id: auth.user.id }, // Send user ID to fetch profile data
+      params: { id: auth.user.id },
     });
-
     if (res.data.success) {
-      // Populate input fields with current data
       name.value = res.data.name || "";
       surname.value = res.data.surname || "";
       email.value = res.data.email || "";
@@ -35,26 +34,37 @@ onMounted(async () => {
     } else {
       error.value = "Could not load profile data.";
     }
-  } catch (err) {
+  } catch {
     error.value = "Error while loading user data";
   }
 });
 
-// Send updated profile data to the backend
+const handleFileChange = (e) => {
+  image.value = e.target.files[0];
+};
+
 const editUser = async () => {
   message.value = "";
   error.value = "";
 
   try {
-    const res = await axios.post("http://localhost:8000/api/editUser.php", {
-      id: auth.user.id,
-      name: name.value,
-      surname: surname.value,
-      email: email.value,
-      password: password.value,
-      title: title.value,
-      bio: bio.value,
-    });
+    const formData = new FormData();
+    formData.append("id", auth.user.id);
+    formData.append("name", name.value);
+    formData.append("surname", surname.value);
+    formData.append("email", email.value);
+    formData.append("password", password.value);
+    formData.append("title", title.value);
+    formData.append("bio", bio.value);
+    if (image.value) formData.append("profile_img", image.value);
+
+    const res = await axios.post(
+      "http://localhost:8000/api/editUser.php",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
 
     if (res.data.ok) {
       alert("Profile updated!");
@@ -63,23 +73,36 @@ const editUser = async () => {
       error.value = res.data.message || "Something went wrong.";
     }
   } catch (err) {
-    if (err.response?.data?.message) {
-      error.value = err.response.data.message;
-    } else if (err.response?.data?.errors) {
-      error.value = Object.values(err.response.data.errors).join(", ");
-    } else {
-      error.value = "Unknown error: " + err.message;
-    }
+    error.value = err.response?.data?.message || err.message;
   }
 };
 
-// Toggle password visibility between text and password types
-function passVisible() {
-  if (passwordInput.value.type == "text") {
-    passwordInput.value.type = "password";
-  } else {
-    passwordInput.value.type = "text";
+const removeProfileImage = async () => {
+  if (!confirm("Are you sure you want to remove your profile image?")) return;
+
+  try {
+    const formData = new FormData();
+    formData.append("id", auth.user.id);
+
+    const res = await axios.post(
+      "http://localhost:8000/api/removeProfileImage.php",
+      formData
+    );
+
+    if (res.data.ok) {
+      alert("Profile image removed!");
+      image.value = null;
+    } else {
+      error.value = res.data.message || "Could not remove image.";
+    }
+  } catch (err) {
+    error.value = err.response?.data?.message || err.message;
   }
+};
+
+function passVisible() {
+  passwordInput.value.type =
+    passwordInput.value.type === "text" ? "password" : "text";
 }
 </script>
 
@@ -164,12 +187,21 @@ function passVisible() {
         <div
           class="w-full pt-2 flex lg:flex-row flex-col justify-between items-center"
         >
-          <input
-            type="file"
-            accept=".png, .jpg, .jpeg"
-            disabled
-            class="file:px-2 file:py-1 file:border border file:mr-2 file:text-sm cursor-not-allowed text-sm lg:w-auto file:rounded-md w-full p-2 rounded-md"
-          />
+          <div class="flex gap-4">
+            <input
+              type="file"
+              accept=".png, .jpg, .jpeg"
+              @change="handleFileChange"
+              class="file:px-2 file:py-1 file:border border file:mr-2 file:text-sm text-sm lg:w-auto file:rounded-md w-full p-2 rounded-md"
+            />
+
+            <button
+              @click="removeProfileImage"
+              class="text-sm border-gray-100 pl-4 pr-4 border rounded-md cursor-pointer"
+            >
+              Remove profile image
+            </button>
+          </div>
 
           <!-- Save and cancel buttons -->
           <div class="flex gap-3 lg:mt-0 mt-2 lg:w-auto w-full">
