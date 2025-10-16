@@ -62,7 +62,7 @@ const formatDate = (dateString) => {
 
       <!-- Profile information -->
       <div
-        class="lg:w-[75%] overflow-y-auto w-full h-full lg:p-10 flex flex-col text-gray-100"
+        class="lg:w-[75%] w-full h-full lg:p-10 flex flex-col overflow-y-auto text-gray-100"
       >
         <!-- Header with username and navigation buttons -->
         <div>
@@ -105,7 +105,7 @@ const formatDate = (dateString) => {
         </div>
 
         <!-- User biography -->
-        <div class="w-full mt-4 text-sm text-justify">
+        <div class="w-full mt-4 text-sm text-justify h-[300px] overflow-y-auto pl-4 pr-4">
           {{ bio }}
         </div>
       </div>
