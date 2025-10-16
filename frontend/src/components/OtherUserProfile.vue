@@ -47,17 +47,17 @@ const formatDate = (dateString) => {
       <!-- User avatar -->
       <div class="lg:w-1/4 w-full h-full flex justify-center items-center p-5">
         <div
-          class="w-full h-full flex justify-center items-center rounded-full overflow-hidden bg-gray-400"
+          class="w-[300px] h-[300px] rounded-full overflow-hidden border border-white flex justify-center items-center bg-gray-700"
         >
           <!-- Ako korisnik ima sliku, prikaži je -->
           <img
             v-if="profileImg"
             :src="`http://localhost:8000/${profileImg}`"
             alt="User profile"
-            class="object-cover w-full h-full"
+            class="object-fit w-full h-full"
           />
           <!-- Inače, default ikonica -->
-          <i v-else class="pi pi-user text-9xl text-gray-700"></i>
+          <i v-else class="pi pi-user text-9xl text-gray-300"></i>
         </div>
       </div>
 

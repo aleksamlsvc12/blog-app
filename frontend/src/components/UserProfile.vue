@@ -54,7 +54,7 @@ const formatDate = (dateString) => {
             v-if="image"
             :src="image"
             alt="Profile"
-            class="object-fit  w-full h-full"
+            class="object-fit w-full h-full"
           />
           <i v-else class="pi pi-user text-9xl text-gray-300"></i>
         </div>
