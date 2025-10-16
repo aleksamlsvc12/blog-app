@@ -11,6 +11,7 @@ const categories = ref([]);
 const selectedCategory = ref("");
 const title = ref("");
 const content = ref("");
+const thumbnail = ref(null);
 const message = ref("");
 
 onMounted(async () => {
@@ -24,46 +25,43 @@ onMounted(async () => {
   }
 });
 
+const handleFileChange = (e) => {
+  thumbnail.value = e.target.files[0];
+};
+
 const createPost = async (e) => {
   e.preventDefault();
 
-  // Collect data to send to the backend
-  const postData = {
-    title: title.value,
-    content: content.value,
-    fk_category: selectedCategory.value,
-    fk_user: auth.user?.id,
-  };
+  const formData = new FormData();
+  formData.append("title", title.value);
+  formData.append("content", content.value);
+  formData.append("fk_category", selectedCategory.value);
+  formData.append("fk_user", auth.user?.id);
+  if (thumbnail.value) {
+    formData.append("thumbnail", thumbnail.value);
+  }
 
   try {
     const res = await axios.post(
       "http://localhost:8000/api/createPost.php",
-      postData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
     );
 
     if (res.data.status === "success") {
       alert("Post created successfully!");
-
-      // Find the selected category to redirect to its page
       const category = categories.value.find(
         (c) => Number(c.id) === Number(selectedCategory.value)
       );
-
-      // Redirect depending on whether category name exists
       if (category && category.name) {
         router.push(`/category/${category.name.toLowerCase()}`);
       } else {
         router.push("/categories");
       }
-
       title.value = "";
       content.value = "";
       selectedCategory.value = "";
+      thumbnail.value = null;
     } else {
       message.value = res.data.message || "Something went wrong.";
     }
@@ -82,78 +80,53 @@ const createPost = async (e) => {
     >
       <p class="text-lg font-bold">Create post</p>
 
-      <!-- Input fields for post creation -->
-      <div
-        class="flex flex-col justify-center items-center gap-4 h-[95%] w-full"
-      >
-        <!-- Post title -->
+      <div class="flex flex-col justify-center items-center gap-4 h-[95%] w-full">
         <div class="w-full">
-          <label for="Title" class="text-sm">Title</label>
-          <input
-            v-model="title"
-            type="text"
-            class="auth-inputs w-full border p-2"
-            placeholder="Enter post title"
-            required
-          />
+          <label class="text-sm">Title</label>
+          <input v-model="title" type="text" class="auth-inputs w-full border p-2" required />
         </div>
 
-        <!-- Post content -->
         <div class="w-full">
-          <label for="Description" class="text-sm block">Description</label>
+          <label class="text-sm block">Description</label>
           <textarea
             v-model="content"
-            id="post-description"
             class="border w-full h-[120px] resize-none p-2 text-xs rounded-[5px]"
-            placeholder="Write your post..."
             required
           ></textarea>
         </div>
 
-        <!-- Thumbnail input -->
         <div class="w-full">
-          <label for="Thumbnail" class="text-sm">Thumbnail</label>
+          <label class="text-sm">Thumbnail</label>
           <input
             type="file"
             accept=".png, .jpg, .jpeg"
-            disabled
-            class="file:py-1 file:px-3 file:border-1 block text-xs border p-2 file:mr-2 w-full file:rounded-[5px] rounded-[5px] cursor-not-allowed"
+            @change="handleFileChange"
+            class="file:py-1 file:px-3 file:border-1 block text-xs border p-2 file:mr-2 w-full file:rounded-[5px] rounded-[5px]"
           />
-          <p class="text-[9px] text-red-500 mt-1">
-            &ast;Allowed file formats: .jpg, .jpeg, .png
-          </p>
+          <p class="text-[9px] text-red-500 mt-1">*Allowed formats: .jpg, .jpeg, .png</p>
         </div>
 
-        <!-- Category dropdown -->
         <div class="w-full">
-          <label for="Category" class="text-sm block">Category</label>
+          <label class="text-sm block">Category</label>
           <select
             v-model="selectedCategory"
-            id="category"
             class="w-full h-[30px] border cursor-pointer text-xs p-2 rounded-[5px]"
             required
           >
             <option value="" disabled>Select a category</option>
-            <option
-              v-for="category in categories"
-              :key="category.id"
-              :value="category.id"
-            >
+            <option v-for="category in categories" :key="category.id" :value="category.id">
               {{ category.name }}
             </option>
           </select>
         </div>
       </div>
 
-      <!-- Submit button -->
       <button
         type="submit"
         class="bg-purple-700 text-sm text-gray-100 py-3 cursor-pointer w-full mt-4 rounded-md font-bold active:scale-95"
       >
         Post
       </button>
-
-      <!-- Display backend message -->
       <p v-if="message" class="mt-4 text-center text-xs">{{ message }}</p>
     </form>
   </div>
