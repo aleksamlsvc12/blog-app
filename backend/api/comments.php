@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../data/db.php';
 
-// GET REQUEST — Fetch comments
+// ✅ GET REQUEST — Fetch comments
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
   if (!isset($_GET['fk_post'])) {
     echo json_encode([
@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
   $fk_post = intval($_GET['fk_post']); // Sanitize post ID
 
-  // Fetch all comments for a specific post along with user info
+  // ✅ Fetch all comments for a specific post along with user info and profile image
   $sql = "
     SELECT 
       c.id, 
@@ -32,7 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       c.created_at, 
       u.name, 
       u.surname, 
-      u.id AS fk_user
+      u.id AS fk_user,
+      u.profile_img  -- 👈 dodato
     FROM comments c
     JOIN users u ON c.fk_user = u.id
     WHERE c.fk_post = $fk_post
@@ -56,7 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
       "created_at" => $row['created_at'],
       "fk_user" => intval($row['fk_user']),
       "name" => $row['name'],
-      "surname" => $row['surname']
+      "surname" => $row['surname'],
+      "profile_img" => $row['profile_img'] // 👈 dodato
     ];
   }
 
@@ -72,7 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $data = json_decode(file_get_contents("php://input"), true);
 
-  // Check if all required fields are provided
   if (
     !isset($data['fk_user']) ||
     !isset($data['fk_post']) ||
@@ -87,9 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   $fk_user = intval($data['fk_user']);
   $fk_post = intval($data['fk_post']);
-  $content = mysqli_real_escape_string($conn, trim($data['content'])); // Prevent SQL injection
+  $content = mysqli_real_escape_string($conn, trim($data['content']));
 
-  // Insert new comment into the database
   $sql_insert = "
     INSERT INTO comments (content, created_at, fk_user, fk_post)
     VALUES ('$content', NOW(), $fk_user, $fk_post)
@@ -126,7 +126,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
   $fk_user = intval($data['fk_user']);
   $content = mysqli_real_escape_string($conn, trim($data['content']));
 
-  // Check if the comment exists and belongs to the user trying to edit it
   $check = mysqli_query($conn, "SELECT fk_user FROM comments WHERE id = $comment_id");
   $row = mysqli_fetch_assoc($check);
 
@@ -136,12 +135,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
   }
 
   if ($row['fk_user'] != $fk_user) {
-    // Prevent editing comments that belong to another user
     echo json_encode(["status" => "error", "message" => "Not authorized to edit this comment."]);
     exit;
   }
 
-  // Update the comment content
   $sql_update = "UPDATE comments SET content = '$content' WHERE id = $comment_id";
 
   if (mysqli_query($conn, $sql_update)) {
@@ -173,7 +170,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
   $comment_id = intval($data['id']);
   $fk_user = intval($data['fk_user']);
 
-  // Verify the comment exists and belongs to the user requesting deletion
   $check = mysqli_query($conn, "SELECT fk_user FROM comments WHERE id = $comment_id");
   $row = mysqli_fetch_assoc($check);
 
@@ -187,7 +183,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     exit;
   }
 
-  // Delete the comment
   $sql_delete = "DELETE FROM comments WHERE id = $comment_id";
 
   if (mysqli_query($conn, $sql_delete)) {
