@@ -22,34 +22,63 @@ if (!isset($data['action']) || !isset($data['user_id'])) {
 $action = $data['action'];
 $user_id = intval($data['user_id']);
 
-switch ($action) {
-    case 'delete':
-        $query = "DELETE FROM users WHERE id = ?";
-        break;
-    case 'promote':
-        $query = "UPDATE users SET fk_user_type = 2 WHERE id = ?";
-        break;
-    case 'demote':
-        $query = "UPDATE users SET fk_user_type = 3 WHERE id = ?";
-        break;
-    default:
-        echo json_encode(["ok" => false, "message" => "Invalid action"]);
-        exit;
-}
-
 try {
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $user_id);
-    $stmt->execute();
+    if ($action === 'delete') {
+        // 1️⃣ Prvo uzmi putanju slike iz baze
+        $stmt = $conn->prepare("SELECT profile_img FROM users WHERE id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $imagePath = null;
+        if ($row = $result->fetch_assoc()) {
+            $imagePath = $row['profile_img'];
+        }
+        $stmt->close();
 
-    if ($stmt->affected_rows > 0) {
-        echo json_encode(["ok" => true]);
-    } else {
-        echo json_encode(["ok" => false, "message" => "No rows affected"]);
+        // 2️⃣ Ako fajl postoji na serveru — obriši ga
+        if ($imagePath && file_exists("../" . $imagePath)) {
+            unlink("../" . $imagePath);
+        }
+
+        // 3️⃣ Obriši korisnika iz baze
+        $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+
+        if ($stmt->affected_rows > 0) {
+            echo json_encode(["ok" => true, "message" => "User and profile image deleted"]);
+        } else {
+            echo json_encode(["ok" => false, "message" => "No rows affected"]);
+        }
+
+        $stmt->close();
+        $conn->close();
+        exit;
     }
 
-    $stmt->close();
-    $conn->close();
+    // PROMOTE
+    if ($action === 'promote') {
+        $stmt = $conn->prepare("UPDATE users SET fk_user_type = 2 WHERE id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        echo json_encode(["ok" => $stmt->affected_rows > 0]);
+        $stmt->close();
+        $conn->close();
+        exit;
+    }
+
+    // DEMOTE
+    if ($action === 'demote') {
+        $stmt = $conn->prepare("UPDATE users SET fk_user_type = 3 WHERE id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        echo json_encode(["ok" => $stmt->affected_rows > 0]);
+        $stmt->close();
+        $conn->close();
+        exit;
+    }
+
+    echo json_encode(["ok" => false, "message" => "Invalid action"]);
 } catch (Exception $e) {
     echo json_encode(["ok" => false, "message" => $e->getMessage()]);
 }
