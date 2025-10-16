@@ -21,7 +21,6 @@ $sql_category = "SELECT id FROM categories WHERE LOWER(name) = LOWER('$categoryN
 $result_category = mysqli_query($conn, $sql_category);
 
 if (!$result_category) {
-  // Handle query error
   echo json_encode([
     "status" => "error",
     "message" => "Database error: " . mysqli_error($conn)
@@ -30,7 +29,6 @@ if (!$result_category) {
 }
 
 if (mysqli_num_rows($result_category) === 0) {
-  // No category found with provided name
   echo json_encode([
     "status" => "empty",
     "message" => "Category not found."
@@ -38,13 +36,10 @@ if (mysqli_num_rows($result_category) === 0) {
   exit;
 }
 
-// Extract category ID for later use
 $category_row = mysqli_fetch_assoc($result_category);
 $category_id = intval($category_row['id']);
 
-// Fetch posts that belong to the category
-// Includes aggregated like/dislike counts
-// and user’s personal reaction
+// ✅ Fetch posts with profile images
 $sql_posts = "
   SELECT 
     p.id, 
@@ -55,11 +50,9 @@ $sql_posts = "
     u.name, 
     u.surname, 
     u.id AS fk_user,
-    -- Count number of likes (type = 1)
+    u.profile_img,  -- 👈 Dodato: uzimamo profilnu sliku korisnika
     (SELECT COUNT(*) FROM reactions r WHERE r.fk_post = p.id AND r.type = 1) AS likes,
-    -- Count number of dislikes (type = 0)
     (SELECT COUNT(*) FROM reactions r WHERE r.fk_post = p.id AND r.type = 0) AS dislikes,
-    -- Get the logged-in user's reaction to this post (if exists)
     (SELECT type FROM reactions r WHERE r.fk_post = p.id AND r.fk_user = $user_id LIMIT 1) AS user_reaction
   FROM posts p
   JOIN users u ON p.fk_user = u.id
@@ -70,7 +63,6 @@ $sql_posts = "
 $result_posts = mysqli_query($conn, $sql_posts);
 
 if (!$result_posts) {
-  // Handle query execution error
   echo json_encode([
     "status" => "error",
     "message" => "Query failed: " . mysqli_error($conn)
@@ -78,7 +70,6 @@ if (!$result_posts) {
   exit;
 }
 
-// Format posts for JSON response
 if (mysqli_num_rows($result_posts) > 0) {
   $posts = [];
 
@@ -92,20 +83,18 @@ if (mysqli_num_rows($result_posts) > 0) {
       "fk_user" => $row["fk_user"],
       "name" => $row["name"],
       "surname" => $row["surname"],
+      "profile_img" => $row["profile_img"], // 👈 Dodato ovde
       "likes" => intval($row['likes']),
       "dislikes" => intval($row['dislikes']),
-      // If user has no reaction, value is null
       "user_reaction" => isset($row['user_reaction']) ? intval($row['user_reaction']) : null
     ];
   }
 
-  // Successful response with all posts
   echo json_encode([
     "status" => "success",
     "posts" => $posts
   ]);
 } else {
-  // No posts found in this category
   echo json_encode([
     "status" => "empty",
     "message" => "No posts found for this category."
