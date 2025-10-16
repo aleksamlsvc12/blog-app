@@ -249,7 +249,6 @@ const deletePost = async (postId) => {
     alert("Error deleting post.");
   }
 };
-
 </script>
 
 <template>
@@ -319,9 +318,15 @@ const deletePost = async (postId) => {
               class="text-xs text-gray-100 font-bold cursor-pointer flex items-center gap-2"
             >
               <div
-                class="w-[30px] h-[30px] rounded-[15px] text-black bg-gray-400 flex justify-center items-center"
+                class="w-[30px] h-[30px] rounded-[15px] overflow-hidden bg-gray-400 flex justify-center items-center"
               >
-                <i class="pi pi-user"></i>
+                <img
+                  v-if="post.profile_img"
+                  :src="`http://localhost:8000/${post.profile_img}`"
+                  alt="User image"
+                  class="object-cover w-full h-full"
+                />
+                <i v-else class="pi pi-user text-black"></i>
               </div>
               <span> {{ post.name }} {{ post.surname }} </span>
             </RouterLink>
