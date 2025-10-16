@@ -12,102 +12,111 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../data/db.php';
 
-// Read and decode raw JSON input
-$raw = file_get_contents("php://input");
-$data = json_decode($raw, true);
-
-if (!$data) {
-  echo json_encode(["status" => "error", "message" => "No JSON received"]);
-  exit;
-}
-
-$action = $data['action'] ?? null;
+$action = $_POST['action'] ?? null;
 if (!$action) {
   echo json_encode(["status" => "error", "message" => "No action provided"]);
   exit;
 }
 
 /* ======================================================
-   🗑 DELETE POST — also remove thumbnail file if it exists
+   🗑 DELETE POST — remove thumbnail file too
    ====================================================== */
 if ($action === 'delete') {
-  $post_id = intval($data['post_id'] ?? 0);
-
+  $post_id = intval($_POST['post_id'] ?? 0);
   if ($post_id <= 0) {
     echo json_encode(["status" => "error", "message" => "Invalid post ID"]);
     exit;
   }
 
-  // 1️⃣ Get image path from database
+  // get old image
   $stmt = $conn->prepare("SELECT image FROM posts WHERE id = ?");
   $stmt->bind_param("i", $post_id);
   $stmt->execute();
   $result = $stmt->get_result();
-  $imagePath = null;
-
-  if ($row = $result->fetch_assoc()) {
-    $imagePath = $row['image'];
-  }
+  $imagePath = $result->fetch_assoc()['image'] ?? null;
   $stmt->close();
 
-  // 2️⃣ Delete post record
+  // delete post
   $stmt = $conn->prepare("DELETE FROM posts WHERE id = ?");
   $stmt->bind_param("i", $post_id);
-  $deleteSuccess = $stmt->execute();
+  $success = $stmt->execute();
   $stmt->close();
 
-  // 3️⃣ If delete succeeded, remove image from disk (if it exists)
-  if ($deleteSuccess) {
-    if ($imagePath && file_exists("../" . $imagePath)) {
-      unlink("../" . $imagePath);
-    }
-
-    echo json_encode(["status" => "success", "message" => "Post and image deleted successfully"]);
+  if ($success) {
+    if ($imagePath && file_exists("../" . $imagePath)) unlink("../" . $imagePath);
+    echo json_encode(["status" => "success", "message" => "Post deleted with image"]);
   } else {
-    echo json_encode([
-      "status" => "error",
-      "message" => "Failed to delete post",
-      "sql_error" => $conn->error
-    ]);
+    echo json_encode(["status" => "error", "message" => "Failed to delete post"]);
   }
-
   $conn->close();
   exit;
 }
 
 /* ======================================================
-   ✏️ EDIT POST — update text and category (image stays the same)
+   ✏️ EDIT POST — can update text, replace or remove image
    ====================================================== */
 if ($action === 'edit') {
-  $post_id = intval($data['post_id'] ?? 0);
-  $title = trim($data['title'] ?? '');
-  $fk_category = intval($data['category'] ?? 0);
-  $content = trim($data['content'] ?? '');
+  $post_id = intval($_POST['post_id'] ?? 0);
+  $title = trim($_POST['title'] ?? '');
+  $fk_category = intval($_POST['category'] ?? 0);
+  $content = trim($_POST['content'] ?? '');
+  $remove_image = filter_var($_POST['remove_image'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
   if ($post_id <= 0 || $title === '' || $content === '' || $fk_category <= 0) {
-    echo json_encode(["status" => "error", "message" => "Missing or invalid fields"]);
+    echo json_encode(["status" => "error", "message" => "Invalid or missing fields"]);
     exit;
   }
 
-  $stmt = $conn->prepare("UPDATE posts SET title = ?, content = ?, fk_category = ? WHERE id = ?");
-  $stmt->bind_param("ssii", $title, $content, $fk_category, $post_id);
+  // get current image
+  $stmt = $conn->prepare("SELECT image FROM posts WHERE id = ?");
+  $stmt->bind_param("i", $post_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $oldImage = $result->fetch_assoc()['image'] ?? null;
+  $stmt->close();
 
-  if ($stmt->execute()) {
-    echo json_encode(["status" => "success", "message" => "Post updated successfully"]);
-  } else {
-    echo json_encode([
-      "status" => "error",
-      "message" => "Failed to update post",
-      "sql_error" => $conn->error
-    ]);
+  $newImagePath = $oldImage;
+
+  // if user uploaded a new file
+  if (!empty($_FILES['thumbnail']['name'])) {
+    $targetDir = "../uploads/thumbnails/";
+    if (!file_exists($targetDir)) mkdir($targetDir, 0777, true);
+    $fileName = time() . "_" . basename($_FILES["thumbnail"]["name"]);
+    $targetFile = $targetDir . $fileName;
+    $ext = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+    $allowed = ["jpg", "jpeg", "png"];
+
+    if (!in_array($ext, $allowed)) {
+      echo json_encode(["status" => "error", "message" => "Invalid image type"]);
+      exit;
+    }
+
+    if (move_uploaded_file($_FILES["thumbnail"]["tmp_name"], $targetFile)) {
+      $newImagePath = "uploads/thumbnails/" . $fileName;
+      // delete old one if existed
+      if ($oldImage && file_exists("../" . $oldImage)) unlink("../" . $oldImage);
+    }
+  } elseif ($remove_image) {
+    // user requested to remove current image
+    if ($oldImage && file_exists("../" . $oldImage)) unlink("../" . $oldImage);
+    $newImagePath = null;
   }
 
+  // update DB
+  $stmt = $conn->prepare("UPDATE posts SET title=?, content=?, fk_category=?, image=? WHERE id=?");
+  $stmt->bind_param("ssisi", $title, $content, $fk_category, $newImagePath, $post_id);
+  $ok = $stmt->execute();
   $stmt->close();
+
+  if ($ok) {
+    echo json_encode(["status" => "success", "message" => "Post updated successfully"]);
+  } else {
+    echo json_encode(["status" => "error", "message" => "Update failed"]);
+  }
   $conn->close();
   exit;
 }
 
-// Invalid action
 echo json_encode(["status" => "error", "message" => "Invalid action"]);
 exit;
 ?>
