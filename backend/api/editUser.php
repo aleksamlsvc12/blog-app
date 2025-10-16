@@ -12,148 +12,96 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once '../data/db.php';
 
-// Decode incoming JSON data safely
-$raw = file_get_contents('php://input');
-$data = json_decode($raw, true) ?: [];
+$id = 0;
+$name = $surname = $email = $password = $title = $bio = "";
 
-// Extract and sanitize input data
-$id = (int) ($data['id'] ?? 0);
-$name = trim($data['name'] ?? '');
-$surname = trim($data['surname'] ?? '');
-$email = trim($data['email'] ?? '');
-$password = (string) ($data['password'] ?? '');
-$title = trim($data['title'] ?? '');
-$bio = trim($data['bio'] ?? '');
+if (isset($_SERVER["CONTENT_TYPE"]) && str_starts_with($_SERVER["CONTENT_TYPE"], "application/json")) {
+  $raw = file_get_contents('php://input');
+  $data = json_decode($raw, true) ?: [];
+  $id = (int)($data['id'] ?? 0);
+  $name = trim($data['name'] ?? '');
+  $surname = trim($data['surname'] ?? '');
+  $email = trim($data['email'] ?? '');
+  $password = $data['password'] ?? '';
+  $title = trim($data['title'] ?? '');
+  $bio = trim($data['bio'] ?? '');
+} else {
 
-// Input Validation
+  $id = (int)($_POST['id'] ?? 0);
+  $name = trim($_POST['name'] ?? '');
+  $surname = trim($_POST['surname'] ?? '');
+  $email = trim($_POST['email'] ?? '');
+  $password = $_POST['password'] ?? '';
+  $title = trim($_POST['title'] ?? '');
+  $bio = trim($_POST['bio'] ?? '');
+}
 
-// Ensure valid user ID
+
 if ($id <= 0) {
-  http_response_code(400);
-  echo json_encode([
-    'ok' => false,
-    'message' => 'Invalid or missing user ID.'
-  ]);
+  echo json_encode(['ok' => false, 'message' => 'Invalid user ID']);
   exit;
 }
 
-// Validate email format if provided
-if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-  http_response_code(422);
-  echo json_encode([
-    'ok' => false,
-    'message' => 'Invalid email format.'
-  ]);
-  exit;
-}
 
-// Check minimum password length if password provided
-if ($password !== '' && strlen($password) < 8) {
-  http_response_code(422);
-  echo json_encode([
-    'ok' => false,
-    'message' => 'Password must have at least 8 characters.'
-  ]);
-  exit;
-}
+$oldImage = null;
+$getOld = $conn->prepare("SELECT profile_img FROM users WHERE id = ?");
+$getOld->bind_param("i", $id);
+$getOld->execute();
+$getOld->bind_result($oldImage);
+$getOld->fetch();
+$getOld->close();
 
-// Unique Email Check
-// Prevent duplicate email usage across different accounts
-if ($email !== '') {
-  $check = $conn->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
-  $check->bind_param("si", $email, $id);
-  $check->execute();
-  $check->store_result();
-  if ($check->num_rows > 0) {
-    http_response_code(409);
-    echo json_encode([
-      'ok' => false,
-      'message' => 'This email is already in use.'
-    ]);
-    exit;
+$profileImgPath = null;
+if (isset($_FILES['profile_img']) && $_FILES['profile_img']['error'] === UPLOAD_ERR_OK && $_FILES['profile_img']['size'] > 0) {
+  $uploadDir = '../uploads/';
+  if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+  $ext = pathinfo($_FILES['profile_img']['name'], PATHINFO_EXTENSION);
+  $filename = 'user_' . $id . '_' . time() . '.' . $ext;
+  $targetFile = $uploadDir . $filename;
+
+  if (move_uploaded_file($_FILES['profile_img']['tmp_name'], $targetFile)) {
+    $profileImgPath = 'uploads/' . $filename;
+
+    if (!empty($oldImage) && file_exists("../" . $oldImage)) {
+      unlink("../" . $oldImage);
+    }
   }
-  $check->close();
 }
 
-// Dynamic Query Building
-// Build SQL query dynamically depending on provided fields
-$fields = []; 
-$params = [];  
+$fields = [];
+$params = [];
 $types = "";
 
-// Only add non-empty fields to the update query
-if ($name !== '') {
-  $fields[] = "name = ?";
-  $params[] = $name;
-  $types .= "s";
-}
-
-if ($surname !== '') {
-  $fields[] = "surname = ?";
-  $params[] = $surname;
-  $types .= "s";
-}
-
-if ($email !== '') {
-  $fields[] = "email = ?";
-  $params[] = $email;
-  $types .= "s";
-}
-
+if ($name !== '') { $fields[] = "name = ?"; $params[] = $name; $types .= "s"; }
+if ($surname !== '') { $fields[] = "surname = ?"; $params[] = $surname; $types .= "s"; }
+if ($email !== '') { $fields[] = "email = ?"; $params[] = $email; $types .= "s"; }
 if ($password !== '') {
-  // Securely hash the password before saving to DB
   $hash = password_hash($password, PASSWORD_DEFAULT);
   $fields[] = "password_hash = ?";
   $params[] = $hash;
   $types .= "s";
 }
+if ($title !== '') { $fields[] = "title = ?"; $params[] = $title; $types .= "s"; }
+if ($bio !== '') { $fields[] = "bio = ?"; $params[] = $bio; $types .= "s"; }
+if ($profileImgPath) { $fields[] = "profile_img = ?"; $params[] = $profileImgPath; $types .= "s"; }
 
-if ($title !== '') {
-  $fields[] = "title = ?";
-  $params[] = $title;
-  $types .= "s";
-}
-
-if ($bio !== '') {
-  $fields[] = "bio = ?";
-  $params[] = $bio;
-  $types .= "s";
-}
-
-// If no fields are provided for update, skip SQL execution
 if (empty($fields)) {
-  echo json_encode([
-    'ok' => true,
-    'message' => 'No fields to update.'
-  ]);
+  echo json_encode(['ok' => true, 'message' => 'Nothing to update.']);
   exit;
 }
 
-// Execute Update Query
-
-// Append user ID for WHERE clause
 $params[] = $id;
 $types .= "i";
 
-// Construct final SQL dynamically
 $sql = "UPDATE users SET " . implode(", ", $fields) . " WHERE id = ?";
-
-// Prepare and bind parameters safely
 $stmt = $conn->prepare($sql);
 $stmt->bind_param($types, ...$params);
 
-// Execute the query and handle response
 if ($stmt->execute()) {
-  echo json_encode([
-    'ok' => true,
-    'message' => 'Profile updated successfully.'
-  ]);
+  echo json_encode(['ok' => true, 'message' => 'Profile updated successfully.']);
 } else {
-  http_response_code(500);
-  echo json_encode([
-    'ok' => false,
-    'message' => 'Database error: ' . $stmt->error
-  ]);
+  echo json_encode(['ok' => false, 'message' => 'Database error: ' . $stmt->error]);
 }
 
 $stmt->close();
