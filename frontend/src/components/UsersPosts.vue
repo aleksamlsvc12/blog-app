@@ -16,6 +16,12 @@ const editingPost = ref(null);
 const newTitle = ref("");
 const newCategory = ref(null);
 const newContent = ref("");
+const newThumbnail = ref(null);
+const removeThumbnail = ref(false);
+
+const handleFileChange = (e) => {
+  newThumbnail.value = e.target.files[0];
+};
 
 // Determine if the viewed profile belongs to the logged-in user
 const isMyProfile = computed(
@@ -29,9 +35,7 @@ const loadPosts = async () => {
     const userId = route.params.id || auth.user.id;
 
     // Fetch all available categories
-    const catRes = await axios.get(
-      "http://localhost:8000/api/getCategories.php"
-    );
+    const catRes = await axios.get("http://localhost:8000/api/getCategories.php");
     if (catRes.data.status === "success") {
       categories.value = catRes.data.categories;
     }
@@ -45,18 +49,11 @@ const loadPosts = async () => {
     }
 
     // Fetch user's posts
-    const postsRes = await axios.get(
-      "http://localhost:8000/api/getUserPosts.php",
-      {
-        params: { user_id: userId },
-      }
-    );
+    const postsRes = await axios.get("http://localhost:8000/api/getUserPosts.php", {
+      params: { user_id: userId },
+    });
 
-    if (
-      postsRes.data.status === "success" &&
-      Array.isArray(postsRes.data.posts)
-    ) {
-      // Normalize posts and ensure category IDs are numeric
+    if (postsRes.data.status === "success" && Array.isArray(postsRes.data.posts)) {
       posts.value = postsRes.data.posts.map((p) => ({
         ...p,
         fk_category: Number(p.fk_category),
@@ -76,10 +73,11 @@ const deletePost = async (id) => {
   if (!confirm("Are you sure you want to delete this post?")) return;
 
   try {
-    const res = await axios.post("http://localhost:8000/api/editPost.php", {
-      action: "delete",
-      post_id: id,
-    });
+    const formData = new FormData();
+    formData.append("action", "delete");
+    formData.append("post_id", id);
+
+    const res = await axios.post("http://localhost:8000/api/editPost.php", formData);
 
     if (res.data.status === "success") {
       alert("Post deleted successfully.");
@@ -99,6 +97,8 @@ const startEdit = (post) => {
   newTitle.value = post.title;
   newCategory.value = Number(post.fk_category);
   newContent.value = post.content;
+  newThumbnail.value = null;
+  removeThumbnail.value = false;
 };
 
 // Cancel editing and reset form fields
@@ -107,31 +107,38 @@ const cancelEdit = () => {
   newTitle.value = "";
   newCategory.value = null;
   newContent.value = "";
+  newThumbnail.value = null;
+  removeThumbnail.value = false;
 };
 
 // Save edited post and refresh data after update
 const saveEdit = async (id) => {
-  if (
-    !newTitle.value.trim() ||
-    !newContent.value.trim() ||
-    !newCategory.value
-  ) {
+  if (!newTitle.value.trim() || !newContent.value.trim() || !newCategory.value) {
     alert("All fields are required.");
     return;
   }
 
+  const formData = new FormData();
+  formData.append("action", "edit");
+  formData.append("post_id", id);
+  formData.append("title", newTitle.value);
+  formData.append("category", newCategory.value);
+  formData.append("content", newContent.value);
+  formData.append("remove_image", removeThumbnail.value);
+  if (newThumbnail.value) {
+    formData.append("thumbnail", newThumbnail.value);
+  }
+
   try {
-    const res = await axios.post("http://localhost:8000/api/editPost.php", {
-      action: "edit",
-      post_id: id,
-      title: newTitle.value,
-      category: Number(newCategory.value),
-      content: newContent.value,
+    const res = await axios.post("http://localhost:8000/api/editPost.php", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
 
     if (res.data.status === "success") {
       alert("Post updated successfully.");
       editingPost.value = null;
+      newThumbnail.value = null;
+      removeThumbnail.value = false;
       await loadPosts();
     } else {
       alert(res.data.message || "Error updating post.");
@@ -207,6 +214,36 @@ const formatDate = (dateString) => {
             class="auth-inputs h-[200px] resize-none mb-4"
             placeholder="Write something..."
           ></textarea>
+
+          <!-- Thumbnail controls -->
+          <div class="mb-4">
+            <label class="block text-sm mb-1">Thumbnail:</label>
+
+            <!-- If post currently has an image -->
+            <div v-if="post.image && !newThumbnail">
+              <img
+                :src="`http://localhost:8000/${post.image}`"
+                alt="Current thumbnail"
+                class="w-full max-h-[200px] object-cover rounded-md mb-2"
+              />
+              <label class="flex items-center gap-2 text-xs mb-2">
+                <input type="checkbox" v-model="removeThumbnail" />
+                Remove current thumbnail
+              </label>
+            </div>
+
+            <!-- File input for new upload -->
+            <input
+              type="file"
+              accept=".png, .jpg, .jpeg"
+              @change="handleFileChange"
+              class="file:py-1 file:px-3 file:border-1 block text-xs border p-2 file:mr-2 w-full file:rounded-[5px] rounded-[5px]"
+            />
+
+            <p class="text-[10px] text-gray-400 mt-1">
+              *Leave empty to keep existing image
+            </p>
+          </div>
 
           <!-- Edit controls -->
           <div class="flex gap-3">
