@@ -16,6 +16,8 @@ const password = ref("");
 const title = ref("");
 const bio = ref("");
 const image = ref(null);
+const originalImage = ref(null); // <--- čuva originalnu sliku iz baze
+const removeImageFlag = ref(false); // <--- pamti da li korisnik želi da ukloni sliku
 
 const message = ref("");
 const error = ref("");
@@ -31,6 +33,7 @@ onMounted(async () => {
       email.value = res.data.email || "";
       title.value = res.data.title || "";
       bio.value = res.data.bio || "";
+      originalImage.value = res.data.image || null; // <--- učitaj originalnu sliku
     } else {
       error.value = "Could not load profile data.";
     }
@@ -41,6 +44,7 @@ onMounted(async () => {
 
 const handleFileChange = (e) => {
   image.value = e.target.files[0];
+  removeImageFlag.value = false; // ako uploaduje novu, ne brišemo staru
 };
 
 const editUser = async () => {
@@ -56,6 +60,11 @@ const editUser = async () => {
     formData.append("password", password.value);
     formData.append("title", title.value);
     formData.append("bio", bio.value);
+
+    // ako je korisnik obeležio da želi da ukloni sliku
+    formData.append("remove_image", removeImageFlag.value ? "1" : "0");
+
+    // ako je uploadovana nova slika, šaljemo je
     if (image.value) formData.append("profile_img", image.value);
 
     const res = await axios.post(
@@ -77,27 +86,13 @@ const editUser = async () => {
   }
 };
 
-const removeProfileImage = async () => {
+// 🚫 Samo frontend uklanjanje slike
+const removeProfileImage = () => {
   if (!confirm("Are you sure you want to remove your profile image?")) return;
 
-  try {
-    const formData = new FormData();
-    formData.append("id", auth.user.id);
-
-    const res = await axios.post(
-      "http://localhost:8000/api/removeProfileImage.php",
-      formData
-    );
-
-    if (res.data.ok) {
-      alert("Profile image removed!");
-      image.value = null;
-    } else {
-      error.value = res.data.message || "Could not remove image.";
-    }
-  } catch (err) {
-    error.value = err.response?.data?.message || err.message;
-  }
+  removeImageFlag.value = true;
+  image.value = null;
+  alert("Profile image removed (pending save).");
 };
 
 function passVisible() {
@@ -105,6 +100,7 @@ function passVisible() {
     passwordInput.value.type === "text" ? "password" : "text";
 }
 </script>
+
 
 <template>
   <!-- Main layout container -->

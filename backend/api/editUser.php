@@ -14,10 +14,13 @@ require_once '../data/db.php';
 
 $id = 0;
 $name = $surname = $email = $password = $title = $bio = "";
+$removeImage = 0; // default
 
+// 🔹 Obrada JSON ili multipart form requesta
 if (isset($_SERVER["CONTENT_TYPE"]) && str_starts_with($_SERVER["CONTENT_TYPE"], "application/json")) {
   $raw = file_get_contents('php://input');
   $data = json_decode($raw, true) ?: [];
+
   $id = (int)($data['id'] ?? 0);
   $name = trim($data['name'] ?? '');
   $surname = trim($data['surname'] ?? '');
@@ -25,8 +28,9 @@ if (isset($_SERVER["CONTENT_TYPE"]) && str_starts_with($_SERVER["CONTENT_TYPE"],
   $password = $data['password'] ?? '';
   $title = trim($data['title'] ?? '');
   $bio = trim($data['bio'] ?? '');
-} else {
+  $removeImage = isset($data['remove_image']) ? (int)$data['remove_image'] : 0;
 
+} else {
   $id = (int)($_POST['id'] ?? 0);
   $name = trim($_POST['name'] ?? '');
   $surname = trim($_POST['surname'] ?? '');
@@ -34,15 +38,15 @@ if (isset($_SERVER["CONTENT_TYPE"]) && str_starts_with($_SERVER["CONTENT_TYPE"],
   $password = $_POST['password'] ?? '';
   $title = trim($_POST['title'] ?? '');
   $bio = trim($_POST['bio'] ?? '');
+  $removeImage = isset($_POST['remove_image']) ? (int)$_POST['remove_image'] : 0;
 }
-
 
 if ($id <= 0) {
   echo json_encode(['ok' => false, 'message' => 'Invalid user ID']);
   exit;
 }
 
-
+// 🔹 Uzimamo trenutnu sliku korisnika
 $oldImage = null;
 $getOld = $conn->prepare("SELECT profile_img FROM users WHERE id = ?");
 $getOld->bind_param("i", $id);
@@ -51,6 +55,19 @@ $getOld->bind_result($oldImage);
 $getOld->fetch();
 $getOld->close();
 
+// 🔹 Ako korisnik označi da želi ukloniti sliku
+$fields = [];
+$params = [];
+$types = "";
+
+if ($removeImage === 1) {
+  $fields[] = "profile_img = NULL";
+  if (!empty($oldImage) && file_exists("../" . $oldImage)) {
+    unlink("../" . $oldImage);
+  }
+}
+
+// 🔹 Ako uploaduje novu sliku, zamenjujemo staru
 $profileImgPath = null;
 if (isset($_FILES['profile_img']) && $_FILES['profile_img']['error'] === UPLOAD_ERR_OK && $_FILES['profile_img']['size'] > 0) {
   $uploadDir = '../uploads/';
@@ -66,13 +83,14 @@ if (isset($_FILES['profile_img']) && $_FILES['profile_img']['error'] === UPLOAD_
     if (!empty($oldImage) && file_exists("../" . $oldImage)) {
       unlink("../" . $oldImage);
     }
+
+    $fields[] = "profile_img = ?";
+    $params[] = $profileImgPath;
+    $types .= "s";
   }
 }
 
-$fields = [];
-$params = [];
-$types = "";
-
+// 🔹 Ostala polja
 if ($name !== '') { $fields[] = "name = ?"; $params[] = $name; $types .= "s"; }
 if ($surname !== '') { $fields[] = "surname = ?"; $params[] = $surname; $types .= "s"; }
 if ($email !== '') { $fields[] = "email = ?"; $params[] = $email; $types .= "s"; }
@@ -84,16 +102,16 @@ if ($password !== '') {
 }
 if ($title !== '') { $fields[] = "title = ?"; $params[] = $title; $types .= "s"; }
 if ($bio !== '') { $fields[] = "bio = ?"; $params[] = $bio; $types .= "s"; }
-if ($profileImgPath) { $fields[] = "profile_img = ?"; $params[] = $profileImgPath; $types .= "s"; }
 
+// 🔹 Ako nema ništa za update
 if (empty($fields)) {
   echo json_encode(['ok' => true, 'message' => 'Nothing to update.']);
   exit;
 }
 
+// 🔹 Izvrši UPDATE
 $params[] = $id;
 $types .= "i";
-
 $sql = "UPDATE users SET " . implode(", ", $fields) . " WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param($types, ...$params);
