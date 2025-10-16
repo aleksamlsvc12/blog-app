@@ -70,13 +70,31 @@ const formatDate = (dateString) => {
 
 <template>
   <div class="p-10 h-full font-mono overflow-y-auto">
-    <h1 class="text-2xl font-bold mb-6 text-center text-white pb-2 border-b border-b-gray-600">Existing Users</h1>
+    <h1 class="text-2xl font-bold mb-6 text-center text-white pb-2 border-b border-b-gray-600">
+      Existing Users
+    </h1>
 
+    <!-- Loading state -->
     <div v-if="loading" class="text-center text-gray-500">Loading...</div>
+
+    <!-- Error state -->
     <div v-else-if="error" class="text-red-500 text-center">{{ error }}</div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
-      <div v-for="user in users" :key="user.id" class="bg-gray-700 rounded-xl p-5 w-full">
+    <!-- Empty state -->
+    <div v-else-if="users.length === 0" class="text-gray-400 text-center italic">
+      No existing users.
+    </div>
+
+    <!-- Users list -->
+    <div
+      v-else
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center"
+    >
+      <div
+        v-for="user in users"
+        :key="user.id"
+        class="bg-gray-700 rounded-xl p-5 w-full"
+      >
         <div class="text-lg font-bold text-white mb-1 flex justify-between">
           <span>{{ user.name }} {{ user.surname }}</span>
           <div class="flex gap-2">
@@ -86,7 +104,10 @@ const formatDate = (dateString) => {
               class="cursor-pointer border flex justify-center items-center p-2 rounded-lg"
               :title="user.fk_user_type === 2 ? 'Demote to User' : 'Promote to Editor'"
             >
-              <i :class="user.fk_user_type === 2 ? 'pi pi-user-minus' : 'pi pi-user-plus'" class="text-sm"></i>
+              <i
+                :class="user.fk_user_type === 2 ? 'pi pi-user-minus' : 'pi pi-user-plus'"
+                class="text-sm"
+              ></i>
             </button>
 
             <!-- Delete -->
@@ -121,3 +142,4 @@ const formatDate = (dateString) => {
     </div>
   </div>
 </template>
+

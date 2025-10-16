@@ -131,7 +131,10 @@ const saveEdit = async (id) => {
 
 <template>
   <div class="p-10 h-full font-mono overflow-y-auto">
-    <h1 class="text-2xl font-bold mb-6 text-center text-white pb-2 border-b border-b-gray-600">
+    <!-- Section: Add New Category -->
+    <h1
+      class="text-2xl font-bold mb-6 text-center text-white pb-2 border-b border-b-gray-600"
+    >
       Add New Category
     </h1>
 
@@ -158,12 +161,11 @@ const saveEdit = async (id) => {
       </button>
     </div>
 
+    <!-- Loading and error states -->
     <div v-if="loading" class="text-center text-gray-500">Loading...</div>
     <div v-else-if="error" class="text-red-500 text-center">{{ error }}</div>
-    <div v-else-if="categories.length === 0" class="text-center text-gray-500">
-      No categories found.
-    </div>
 
+    <!-- Always show section title -->
     <h1
       v-else
       class="text-2xl font-bold text-white text-center mb-6 pb-2 border-b border-b-gray-600"
@@ -171,8 +173,17 @@ const saveEdit = async (id) => {
       Existing Categories
     </h1>
 
+    <!-- If no categories -->
     <div
-      v-if="categories.length > 0"
+      v-if="!loading && !error && categories.length === 0"
+      class="text-center text-gray-400 italic mt-6"
+    >
+      No existing categories.
+    </div>
+
+    <!-- If there are categories -->
+    <div
+      v-else-if="categories.length > 0"
       class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center"
     >
       <div
@@ -180,7 +191,6 @@ const saveEdit = async (id) => {
         :key="cat.id"
         class="bg-gray-700 rounded-xl p-5 w-full"
       >
-
         <template v-if="editing !== cat.id">
           <div class="text-lg font-bold text-white mb-4 flex justify-between">
             <span>{{ cat.name }}</span>
@@ -237,3 +247,4 @@ const saveEdit = async (id) => {
     </div>
   </div>
 </template>
+

@@ -13,12 +13,23 @@ import Category from "./Category.vue";
   <!-- Main container with scrollable area and custom font -->
   <div class="p-10 h-full overflow-y-auto font-mono">
     <!-- Page heading -->
-    <p class="mb-10 text-2xl font-bold text-white p-4 text-center lg:text-left pb-2 border-b border-b-gray-600">
+    <p
+      class="mb-10 text-2xl font-bold text-white p-4 text-center lg:text-left pb-2 border-b border-b-gray-600"
+    >
       Discover What Interests You
     </p>
 
-    <!-- Responsive grid displaying all categories -->
+    <!-- If there are no categories -->
     <div
+      v-if="!categories || categories.length === 0"
+      class="text-gray-400 text-center italic mt-10"
+    >
+      No existing categories.
+    </div>
+
+    <!-- Otherwise show categories -->
+    <div
+      v-else
       class="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-y-10 justify-items-center"
     >
       <Category
