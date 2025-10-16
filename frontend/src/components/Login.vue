@@ -26,7 +26,7 @@ const loginUser = async () => {
       { headers: { "Content-Type": "application/json" } }
     );
 
-    console.log(res.status, res.data)
+    console.log(res.status, res.data);
 
     // Check backend response for success
     if (res.data && res.data.ok === true) {

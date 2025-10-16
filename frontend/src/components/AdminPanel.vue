@@ -70,7 +70,9 @@ const formatDate = (dateString) => {
 
 <template>
   <div class="p-10 h-full font-mono overflow-y-auto">
-    <h1 class="text-2xl font-bold mb-6 text-center text-white pb-2 border-b border-b-gray-600">
+    <h1
+      class="text-2xl font-bold mb-6 text-center text-white pb-2 border-b border-b-gray-600"
+    >
       Existing Users
     </h1>
 
@@ -81,7 +83,10 @@ const formatDate = (dateString) => {
     <div v-else-if="error" class="text-red-500 text-center">{{ error }}</div>
 
     <!-- Empty state -->
-    <div v-else-if="users.length === 0" class="text-gray-400 text-center italic">
+    <div
+      v-else-if="users.length === 0"
+      class="text-gray-400 text-center italic"
+    >
       No existing users.
     </div>
 
@@ -102,10 +107,16 @@ const formatDate = (dateString) => {
             <button
               @click="toggleRole(user)"
               class="cursor-pointer border flex justify-center items-center p-2 rounded-lg"
-              :title="user.fk_user_type === 2 ? 'Demote to User' : 'Promote to Editor'"
+              :title="
+                user.fk_user_type === 2 ? 'Demote to User' : 'Promote to Editor'
+              "
             >
               <i
-                :class="user.fk_user_type === 2 ? 'pi pi-user-minus' : 'pi pi-user-plus'"
+                :class="
+                  user.fk_user_type === 2
+                    ? 'pi pi-user-minus'
+                    : 'pi pi-user-plus'
+                "
                 class="text-sm"
               ></i>
             </button>
@@ -128,10 +139,10 @@ const formatDate = (dateString) => {
           <span
             :class="{
               'text-black font-bold': user.fk_user_type === 2,
-              'text-white font-bold': user.fk_user_type === 3
+              'text-white font-bold': user.fk_user_type === 3,
             }"
           >
-            {{ user.fk_user_type === 2 ? 'Moderator' : 'User' }}
+            {{ user.fk_user_type === 2 ? "Moderator" : "User" }}
           </span>
         </div>
 
@@ -142,4 +153,3 @@ const formatDate = (dateString) => {
     </div>
   </div>
 </template>
-

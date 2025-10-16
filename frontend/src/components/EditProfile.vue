@@ -16,8 +16,8 @@ const password = ref("");
 const title = ref("");
 const bio = ref("");
 const image = ref(null);
-const originalImage = ref(null); // <--- čuva originalnu sliku iz baze
-const removeImageFlag = ref(false); // <--- pamti da li korisnik želi da ukloni sliku
+const originalImage = ref(null);
+const removeImageFlag = ref(false);
 
 const message = ref("");
 const error = ref("");
@@ -33,7 +33,7 @@ onMounted(async () => {
       email.value = res.data.email || "";
       title.value = res.data.title || "";
       bio.value = res.data.bio || "";
-      originalImage.value = res.data.image || null; // <--- učitaj originalnu sliku
+      originalImage.value = res.data.image || null;
     } else {
       error.value = "Could not load profile data.";
     }
@@ -44,7 +44,7 @@ onMounted(async () => {
 
 const handleFileChange = (e) => {
   image.value = e.target.files[0];
-  removeImageFlag.value = false; // ako uploaduje novu, ne brišemo staru
+  removeImageFlag.value = false;
 };
 
 const editUser = async () => {
@@ -61,10 +61,8 @@ const editUser = async () => {
     formData.append("title", title.value);
     formData.append("bio", bio.value);
 
-    // ako je korisnik obeležio da želi da ukloni sliku
     formData.append("remove_image", removeImageFlag.value ? "1" : "0");
 
-    // ako je uploadovana nova slika, šaljemo je
     if (image.value) formData.append("profile_img", image.value);
 
     const res = await axios.post(
@@ -86,7 +84,6 @@ const editUser = async () => {
   }
 };
 
-// 🚫 Samo frontend uklanjanje slike
 const removeProfileImage = () => {
   if (!confirm("Are you sure you want to remove your profile image?")) return;
 
@@ -100,7 +97,6 @@ function passVisible() {
     passwordInput.value.type === "text" ? "password" : "text";
 }
 </script>
-
 
 <template>
   <!-- Main layout container -->

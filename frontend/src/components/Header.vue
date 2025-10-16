@@ -66,7 +66,9 @@ const isAdmin = computed(() => {
         <button
           class="border p-1 px-3 cursor-pointer rounded-md active:scale-95"
         >
-          <span v-if="auth.user.fk_user_type === 3"> {{ auth.user.name }} {{ auth.user.surname }} </span>
+          <span v-if="auth.user.fk_user_type === 3">
+            {{ auth.user.name }} {{ auth.user.surname }}
+          </span>
           <span v-else-if="auth.user.fk_user_type === 2"> Modifier </span>
           <span v-else> Admin </span>
         </button>

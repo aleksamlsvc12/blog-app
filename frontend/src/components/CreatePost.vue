@@ -80,10 +80,17 @@ const createPost = async (e) => {
     >
       <p class="text-lg font-bold">Create post</p>
 
-      <div class="flex flex-col justify-center items-center gap-4 h-[95%] w-full">
+      <div
+        class="flex flex-col justify-center items-center gap-4 h-[95%] w-full"
+      >
         <div class="w-full">
           <label class="text-sm">Title</label>
-          <input v-model="title" type="text" class="auth-inputs w-full border p-2" required />
+          <input
+            v-model="title"
+            type="text"
+            class="auth-inputs w-full border p-2"
+            required
+          />
         </div>
 
         <div class="w-full">
@@ -103,7 +110,9 @@ const createPost = async (e) => {
             @change="handleFileChange"
             class="file:py-1 file:px-3 file:border-1 block text-xs border p-2 file:mr-2 w-full file:rounded-[5px] rounded-[5px]"
           />
-          <p class="text-[9px] text-red-500 mt-1">*Allowed formats: .jpg, .jpeg, .png</p>
+          <p class="text-[9px] text-red-500 mt-1">
+            *Allowed formats: .jpg, .jpeg, .png
+          </p>
         </div>
 
         <div class="w-full">
@@ -114,7 +123,11 @@ const createPost = async (e) => {
             required
           >
             <option value="" disabled>Select a category</option>
-            <option v-for="category in categories" :key="category.id" :value="category.id">
+            <option
+              v-for="category in categories"
+              :key="category.id"
+              :value="category.id"
+            >
               {{ category.name }}
             </option>
           </select>

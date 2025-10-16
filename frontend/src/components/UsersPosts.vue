@@ -35,7 +35,9 @@ const loadPosts = async () => {
     const userId = route.params.id || auth.user.id;
 
     // Fetch all available categories
-    const catRes = await axios.get("http://localhost:8000/api/getCategories.php");
+    const catRes = await axios.get(
+      "http://localhost:8000/api/getCategories.php"
+    );
     if (catRes.data.status === "success") {
       categories.value = catRes.data.categories;
     }
@@ -49,11 +51,17 @@ const loadPosts = async () => {
     }
 
     // Fetch user's posts
-    const postsRes = await axios.get("http://localhost:8000/api/getUserPosts.php", {
-      params: { user_id: userId },
-    });
+    const postsRes = await axios.get(
+      "http://localhost:8000/api/getUserPosts.php",
+      {
+        params: { user_id: userId },
+      }
+    );
 
-    if (postsRes.data.status === "success" && Array.isArray(postsRes.data.posts)) {
+    if (
+      postsRes.data.status === "success" &&
+      Array.isArray(postsRes.data.posts)
+    ) {
       posts.value = postsRes.data.posts.map((p) => ({
         ...p,
         fk_category: Number(p.fk_category),
@@ -77,7 +85,10 @@ const deletePost = async (id) => {
     formData.append("action", "delete");
     formData.append("post_id", id);
 
-    const res = await axios.post("http://localhost:8000/api/editPost.php", formData);
+    const res = await axios.post(
+      "http://localhost:8000/api/editPost.php",
+      formData
+    );
 
     if (res.data.status === "success") {
       alert("Post deleted successfully.");
@@ -113,7 +124,11 @@ const cancelEdit = () => {
 
 // Save edited post and refresh data after update
 const saveEdit = async (id) => {
-  if (!newTitle.value.trim() || !newContent.value.trim() || !newCategory.value) {
+  if (
+    !newTitle.value.trim() ||
+    !newContent.value.trim() ||
+    !newCategory.value
+  ) {
     alert("All fields are required.");
     return;
   }
@@ -130,9 +145,13 @@ const saveEdit = async (id) => {
   }
 
   try {
-    const res = await axios.post("http://localhost:8000/api/editPost.php", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const res = await axios.post(
+      "http://localhost:8000/api/editPost.php",
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
 
     if (res.data.status === "success") {
       alert("Post updated successfully.");

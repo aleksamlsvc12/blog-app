@@ -247,4 +247,3 @@ const saveEdit = async (id) => {
     </div>
   </div>
 </template>
-
