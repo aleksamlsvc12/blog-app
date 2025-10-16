@@ -291,6 +291,38 @@ const deletePost = async (postId) => {
           <div
             class="flex justify-between items-center lg:flex-row flex-col-reverse gap-2"
           >
+            <!-- Author info and profile link -->
+            <div class="flex justify-between pt-2">
+              <div v-if="auth.user.fk_user_type === 2">
+                <button
+                  @click="deletePost(post.id)"
+                  class="flex justify-center items-center bg-red-800 text-white text-xs font-bold px-3 py-1 rounded-md cursor-pointer active:scale-95"
+                >
+                  <i class="pi pi-trash p-1"></i>
+                </button>
+              </div>
+
+              <RouterLink
+                :to="{ name: 'OtherUserProfile', params: { id: post.fk_user } }"
+                class="text-xs text-gray-100 font-bold cursor-pointer flex items-center gap-2"
+              >
+                <div
+                  class="w-[30px] h-[30px] rounded-[15px] overflow-hidden bg-gray-400 flex"
+                >
+                  <img
+                    v-if="post.profile_img"
+                    :src="`http://localhost:8000/${post.profile_img}`"
+                    alt="User image"
+                    class="object-cover w-full h-full"
+                  />
+                  <i v-else class="pi pi-user text-black"></i>
+                </div>
+                <span> {{ post.name }} {{ post.surname }} </span>
+              </RouterLink>
+            </div>
+          </div>
+
+          <div class="flex justify-between mt-4">
             <span class="text-lg text-white font-bold">{{ post.title }}</span>
             <span class="text-xs text-gray-400">{{
               formatDate(post.created_at)
@@ -298,39 +330,17 @@ const deletePost = async (postId) => {
           </div>
 
           <!-- Post content -->
+          <div v-if="post.image" class="my-4">
+            <img
+              :src="`http://localhost:8000/${post.image}`"
+              alt="Post thumbnail"
+              class="w-full max-h-[300px] object-fit rounded-lg"
+            />
+          </div>
+
           <p class="text-sm text-gray-100 mt-4 text-justify">
             {{ post.content }}
           </p>
-
-          <!-- Author info and profile link -->
-          <div class="flex justify-between pt-2 items-center">
-            <div v-if="auth.user.fk_user_type === 2">
-              <button
-                @click="deletePost(post.id)"
-                class="flex justify-center items-center  bg-red-800 text-white text-xs font-bold px-3 py-1 rounded-md cursor-pointer active:scale-95"
-              >
-                <i class="pi pi-trash p-1"></i>
-              </button>
-            </div>
-
-            <RouterLink
-              :to="{ name: 'OtherUserProfile', params: { id: post.fk_user } }"
-              class="text-xs text-gray-100 font-bold cursor-pointer flex items-center gap-2"
-            >
-              <div
-                class="w-[30px] h-[30px] rounded-[15px] overflow-hidden bg-gray-400 flex justify-center items-center"
-              >
-                <img
-                  v-if="post.profile_img"
-                  :src="`http://localhost:8000/${post.profile_img}`"
-                  alt="User image"
-                  class="object-cover w-full h-full"
-                />
-                <i v-else class="pi pi-user text-black"></i>
-              </div>
-              <span> {{ post.name }} {{ post.surname }} </span>
-            </RouterLink>
-          </div>
         </div>
 
         <!-- Reactions -->
