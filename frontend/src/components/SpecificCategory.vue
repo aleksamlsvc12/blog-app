@@ -252,7 +252,7 @@ const deletePost = async (postId) => {
 </script>
 
 <template>
-  <div class="p-10 font-mono h-full overflow-y-auto">
+  <div class="lg:p-10 p-4 font-mono h-full overflow-y-auto">
     <!-- Loading state -->
     <div v-if="loading" class="text-gray-500">Loading posts...</div>
 
@@ -274,7 +274,7 @@ const deletePost = async (postId) => {
     </div>
 
     <!-- Main section showing posts and their comments -->
-    <div v-else>
+    <div v-else class="lg:p-10 p-4">
       <h1
         class="text-2xl font-bold text-white mb-4 pb-2 border-b border-b-gray-600"
       >
@@ -284,7 +284,7 @@ const deletePost = async (postId) => {
       <div
         v-for="(post, index) in posts"
         :key="post.id"
-        class="rounded-2xl p-8 pb-4 mb-10 bg-gray-700"
+        class="rounded-2xl w-full lg:p-8 p-4 pb-4 mb-10 bg-gray-700"
       >
         <!-- Post header -->
         <div class="bg-gray-900 rounded-xl p-4">
@@ -337,11 +337,11 @@ const deletePost = async (postId) => {
           </div>
 
           <!-- Post content -->
-          <div v-if="post.image" class="lg:p-10 p-2 flex justify-center">
+          <div v-if="post.image" class="pt-4 pb-4 w-full flex justify-center">
             <img
               :src="`http://localhost:8000/${post.image}`"
               alt="Post thumbnail"
-              class="w-full lg:max-w-[1000px] h-full lg:max-h-[300px] object-fit rounded-lg"
+              class="w-full lg:w-[80%] max-h-[400px] object-fit rounded-lg"
             />
           </div>
 

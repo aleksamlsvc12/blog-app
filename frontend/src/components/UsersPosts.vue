@@ -310,7 +310,7 @@ const formatDate = (dateString) => {
             <img
               :src="`http://localhost:8000/${post.image}`"
               alt="Post thumbnail"
-              class="w-full max-h-[300px] object-fit rounded-lg"
+              class="w-full max-h-[400px] object-fit rounded-lg"
             />
           </div>
 
