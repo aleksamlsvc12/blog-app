@@ -27,6 +27,7 @@ onMounted(async () => {
 
 const handleFileChange = (e) => {
   thumbnail.value = e.target.files[0];
+  alert('Thumbnail uploaded (pending post)')
 };
 
 const createPost = async (e) => {
