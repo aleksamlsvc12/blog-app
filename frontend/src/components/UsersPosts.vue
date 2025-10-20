@@ -21,6 +21,7 @@ const removeThumbnail = ref(false);
 
 const handleFileChange = (e) => {
   newThumbnail.value = e.target.files[0];
+  alert("New thumbnail uploaded (pending save).");
 };
 
 // Determine if the viewed profile belongs to the logged-in user
@@ -240,11 +241,6 @@ const formatDate = (dateString) => {
 
             <!-- If post currently has an image -->
             <div v-if="post.image && !newThumbnail">
-              <img
-                :src="`http://localhost:8000/${post.image}`"
-                alt="Current thumbnail"
-                class="w-full max-h-[200px] object-cover rounded-md mb-2"
-              />
               <label class="flex items-center gap-2 text-xs mb-2">
                 <input type="checkbox" v-model="removeThumbnail" />
                 Remove current thumbnail
@@ -314,7 +310,7 @@ const formatDate = (dateString) => {
             <img
               :src="`http://localhost:8000/${post.image}`"
               alt="Post thumbnail"
-              class="w-full max-h-[300px] object-cover rounded-lg"
+              class="w-full max-h-[300px] object-fit rounded-lg"
             />
           </div>
 

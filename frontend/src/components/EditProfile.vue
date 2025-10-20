@@ -45,6 +45,7 @@ onMounted(async () => {
 const handleFileChange = (e) => {
   image.value = e.target.files[0];
   removeImageFlag.value = false;
+  alert("New profile image uploaded (pending save).");
 };
 
 const editUser = async () => {

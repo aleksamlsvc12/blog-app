@@ -43,7 +43,10 @@ const loginUser = async () => {
     }
 
     // Redirect to categories page on successful login
-    if (success.value) router.push("/categories");
+    if (success.value) {
+      router.push("/categories");
+      alert("Login successful!");
+    }
   } catch (err) {
     if (err.response) {
       console.log(err.response.status, err.response.data);
