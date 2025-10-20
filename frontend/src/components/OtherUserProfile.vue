@@ -54,7 +54,7 @@ const formatDate = (dateString) => {
             v-if="profileImg"
             :src="`http://localhost:8000/${profileImg}`"
             alt="User profile"
-            class="object-fit w-full h-full"
+            class="object-cover w-full h-full"
           />
           <!-- Inače, default ikonica -->
           <i v-else class="pi pi-user text-9xl text-gray-300"></i>
