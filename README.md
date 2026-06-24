@@ -6,13 +6,10 @@ The application provides a foundation for creating and managing blog content thr
 
 ## Technologies
 
-* **Frontend:** Vue.js, Vite, Tailwind CSS
+* **Frontend:** Vue.js, Tailwind CSS
 * **Backend:** PHP
-* **Styling:** Tailwind CSS
 
 ## Project Context
-
-This project was developed as part of the course **Web Application Programming**.
 
 * **Student:** Aleksa Milosevic, RT-10/22
 * **Mentor:** Dr. Gabrijela Dimic
